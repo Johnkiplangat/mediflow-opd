@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow Pharmacy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root { --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
+        body { background: #f1f5f9; font-family: 'Segoe UI', sans-serif; }
+        .sidebar { width: 260px; background: #1e293b; min-height: 100vh; position: fixed; color: white; }
+        .sidebar-brand { padding: 20px; font-size: 1.5rem; font-weight: bold; border-bottom: 1px solid #334155; }
+        .sidebar-menu { padding: 10px 0; }
+        .sidebar-item { padding: 12px 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .sidebar-item:hover, .sidebar-item.active { background: #334155; border-left: 3px solid var(--primary); }
+        .main-content { margin-left: 260px; padding: 20px; }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .drug-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; }
+        .drug-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .stock-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .stock-ok { background: #d1fae5; color: #065f46; }
+        .stock-low { background: #fef3c7; color: #92400e; }
+        .stock-out { background: #fee2e2; color: #991b1b; }
+        .prescription-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--primary); }
+        .search-box { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 15px; width: 100%; }
+        .btn-primary { background: var(--primary); border: none; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .batch-row { background: #f8fafc; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+        .expiry-warning { color: var(--danger); font-weight: 600; }
+        .expiry-ok { color: var(--success); }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-brand"><i class="fas fa-pills me-2"></i>MediFlow Rx</div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item active" onclick="showTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="sidebar-item" onclick="showTab('inventory')"><i class="fas fa-boxes"></i> Inventory</div>
+            <div class="sidebar-item" onclick="showTab('dispensing')"><i class="fas fa-prescription-bottle-alt"></i> Dispensing</div>
+            <div class="sidebar-item" onclick="showTab('drugs')"><i class="fas fa-capsules"></i> Drug Catalog</div>
+            <div class="sidebar-item" onclick="showTab('reports')"><i class="fas fa-file-alt"></i> Reports</div>
+            <div class="sidebar-item" onclick="window.location.href='mediflow-dashboard.html'"><i class="fas fa-arrow-left"></i> Back to OPD</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2 class="mb-4">Pharmacy Dashboard</h2>
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="fas fa-pills"></i></div>
+                        <div><div class="text-muted small">Total Drugs</div><div class="fs-3 fw-bold" id="totalDrugs">0</div></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div><div class="text-muted small">Low Stock</div><div class="fs-3 fw-bold text-warning" id="lowStock">0</div></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="fas fa-times-circle"></i></div>
+                        <div><div class="text-muted small">Out of Stock</div><div class="fs-3 fw-bold text-danger" id="outOfStock">0</div></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="fas fa-prescription"></i></div>
+                        <div><div class="text-muted small">Pending Rx</div><div class="fs-3 fw-bold text-success" id="pendingRx">0</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="bg-white rounded-3 p-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fas fa-clock text-warning me-2"></i>Expiring Soon (90 days)</h5>
+                        <div id="expiryAlerts"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-white rounded-3 p-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fas fa-bell text-danger me-2"></i>Stock Alerts</h5>
+                        <div id="stockAlerts"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Tab -->
+        <div id="inventory" class="tab-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Inventory Management</h2>
+                <button class="btn btn-primary" onclick="openStockInModal()"><i class="fas fa-plus me-2"></i>Receive Stock</button>
+            </div>
+            <input type="text" class="search-box mb-4" id="inventorySearch" placeholder="Search drugs..." onkeyup="filterInventory()">
+            <div id="inventoryList"></div>
+        </div>
+
+        <!-- Dispensing Tab -->
+        <div id="dispensing" class="tab-content">
+            <h2 class="mb-4">Prescription Dispensing</h2>
+            <div id="pendingPrescriptions"></div>
+        </div>
+
+        <!-- Drug Catalog Tab -->
+        <div id="drugs" class="tab-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Drug Catalog</h2>
+                <button class="btn btn-primary" onclick="openAddDrugModal()"><i class="fas fa-plus me-2"></i>Add Drug</button>
+            </div>
+            <input type="text" class="search-box mb-4" id="drugSearch" placeholder="Search by name or generic name..." onkeyup="filterDrugs()">
+            <div id="drugList"></div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <h2 class="mb-4">Pharmacy Reports</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="bg-white rounded-3 p-4 shadow-sm">
+                        <h5>Stock Levels</h5>
+                        <button class="btn btn-sm btn-primary mb-3" onclick="loadStockReport()">Generate</button>
+                        <div id="stockReport"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-white rounded-3 p-4 shadow-sm">
+                        <h5>Expiry Report</h5>
+                        <button class="btn btn-sm btn-primary mb-3" onclick="loadExpiryReport()">Generate</button>
+                        <div id="expiryReport"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock In Modal -->
+    <div class="modal-overlay" id="stockInModal">
+        <div class="modal-content">
+            <h4 class="mb-4">Receive New Stock</h4>
+            <div class="mb-3">
+                <label class="form-label">Drug</label>
+                <select class="form-select" id="stockDrugId"></select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Batch Number</label>
+                <input type="text" class="form-control" id="batchNumber" placeholder="e.g., PNL2026A">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Supplier</label>
+                <input type="text" class="form-control" id="supplier" placeholder="e.g., Dawa Limited">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="stockQuantity" min="1">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Purchase Price (per unit)</label>
+                    <input type="number" class="form-control" id="purchasePrice" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Selling Price (per unit)</label>
+                    <input type="number" class="form-control" id="sellingPrice" step="0.01">
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-secondary" onclick="closeModal('stockInModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitStockIn()">Receive Stock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Drug Modal -->
+    <div class="modal-overlay" id="addDrugModal">
+        <div class="modal-content">
+            <h4 class="mb-4">Add New Drug</h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Brand Name</label>
+                    <input type="text" class="form-control" id="drugName" placeholder="e.g., Panadol">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Generic Name</label>
+                    <input type="text" class="form-control" id="genericName" placeholder="e.g., Paracetamol">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Dosage Form</label>
+                    <select class="form-select" id="dosageForm">
+                        <option>Tablet</option><option>Capsule</option><option>Syrup</option>
+                        <option>Injection</option><option>Cream</option><option>Drops</option>
+                        <option>Inhaler</option><option>Suppository</option><option>Sachet</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Strength</label>
+                    <input type="text" class="form-control" id="strength" placeholder="e.g., 500mg">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="category">
+                        <option>Analgesic</option><option>Antibiotic</option><option>Antimalarial</option>
+                        <option>Antihistamine</option><option>Vitamin</option><option>Electrolyte</option>
+                        <option>Antacid</option><option>Antifungal</option><option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Unit of Measure</label>
+                    <input type="text" class="form-control" id="unitMeasure" placeholder="e.g., Tablet">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Reorder Level</label>
+                    <input type="number" class="form-control" id="reorderLevel" value="50" min="1">
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-secondary" onclick="closeModal('addDrugModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitAddDrug()">Add Drug</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dispense Modal -->
+    <div class="modal-overlay" id="dispenseModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <h4 class="mb-4">Dispense Prescription</h4>
+            <div id="dispenseContent"></div>
+            <div class="d-flex gap-2 justify-content-end mt-4">
+                <button class="btn btn-secondary" onclick="closeModal('dispenseModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitDispense()">Complete Dispensing</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:4000' 
+            : 'https://mediflow-opd-1-backend.onrender.com';
+
+        let currentDrugs = [];
+        let currentInventory = [];
+        let currentPrescription = null;
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            if (tabId === 'dashboard') loadDashboard();
+            if (tabId === 'inventory') loadInventory();
+            if (tabId === 'dispensing') loadPendingPrescriptions();
+            if (tabId === 'drugs') loadDrugs();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        async function loadDashboard() {
+            try {
+                const [drugsRes, invRes, rxRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/pharmacy/drugs`),
+                    fetch(`${API_BASE}/api/pharmacy/inventory`),
+                    fetch(`${API_BASE}/api/pharmacy/pending-prescriptions`)
+                ]);
+                const drugs = await drugsRes.json();
+                const inv = await invRes.json();
+                const rx = await rxRes.json();
+
+                document.getElementById('totalDrugs').textContent = drugs.data.length;
+                document.getElementById('lowStock').textContent = inv.data.inventory.filter(i => i.stock_status === 'low_stock').length;
+                document.getElementById('outOfStock').textContent = inv.data.inventory.filter(i => i.stock_status === 'out_of_stock').length;
+                document.getElementById('pendingRx').textContent = rx.data.length;
+
+                const expiryHtml = inv.data.expiryAlerts.slice(0, 5).map(b => `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div><strong>${b.drug_name}</strong> <small class="text-muted">(${b.batch_number})</small></div>
+                        <div class="expiry-warning">${b.expiry_date}</div>
+                    </div>
+                `).join('') || '<div class="text-muted">No expiring batches</div>';
+                document.getElementById('expiryAlerts').innerHTML = expiryHtml;
+
+                const alertsHtml = inv.data.inventory.filter(i => i.stock_status !== 'in_stock').slice(0, 5).map(i => `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div><strong>${i.name}</strong></div>
+                        <span class="stock-badge ${i.stock_status === 'out_of_stock' ? 'stock-out' : 'stock-low'}">${i.available_quantity} left</span>
+                    </div>
+                `).join('') || '<div class="text-muted">All stock levels OK</div>';
+                document.getElementById('stockAlerts').innerHTML = alertsHtml;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadInventory() {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/inventory`);
+                const data = await res.json();
+                currentInventory = data.data.inventory;
+                renderInventory(currentInventory);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderInventory(items) {
+            document.getElementById('inventoryList').innerHTML = items.map(item => `
+                <div class="drug-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">${item.name}</h6>
+                            <small class="text-muted">${item.generic_name} | ${item.dosage_form} ${item.strength}</small>
+                        </div>
+                        <span class="stock-badge ${item.stock_status === 'in_stock' ? 'stock-ok' : item.stock_status === 'low_stock' ? 'stock-low' : 'stock-out'}">${item.stock_status.replace('_', ' ').toUpperCase()}</span>
+                    </div>
+                    <div class="row mt-3 text-center">
+                        <div class="col-4"><div class="text-muted small">Total</div><div class="fw-bold">${item.total_quantity}</div></div>
+                        <div class="col-4"><div class="text-muted small">Available</div><div class="fw-bold text-success">${item.available_quantity}</div></div>
+                        <div class="col-4"><div class="text-muted small">Reorder At</div><div class="fw-bold text-warning">${item.reorder_level}</div></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterInventory() {
+            const term = document.getElementById('inventorySearch').value.toLowerCase();
+            renderInventory(currentInventory.filter(i => i.name.toLowerCase().includes(term) || i.generic_name.toLowerCase().includes(term)));
+        }
+
+        async function loadDrugs() {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/drugs`);
+                const data = await res.json();
+                currentDrugs = data.data;
+                renderDrugs(currentDrugs);
+                const select = document.getElementById('stockDrugId');
+                select.innerHTML = currentDrugs.map(d => `<option value="${d.id}">${d.name} (${d.generic_name})</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function renderDrugs(drugs) {
+            document.getElementById('drugList').innerHTML = drugs.map(d => `
+                <div class="drug-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">${d.name}</h6>
+                            <small class="text-muted">${d.generic_name} | ${d.dosage_form} ${d.strength}</small>
+                            <div class="mt-1"><span class="badge bg-light text-dark">${d.category}</span></div>
+                        </div>
+                        <div class="text-end">
+                            <span class="stock-badge ${d.stock_status === 'in_stock' ? 'stock-ok' : d.stock_status === 'low_stock' ? 'stock-low' : 'stock-out'}">${d.stock_quantity || 0} in stock</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterDrugs() {
+            const term = document.getElementById('drugSearch').value.toLowerCase();
+            renderDrugs(currentDrugs.filter(d => d.name.toLowerCase().includes(term) || d.generic_name.toLowerCase().includes(term)));
+        }
+
+        function openStockInModal() { openModal('stockInModal'); }
+
+        async function submitStockIn() {
+            const payload = {
+                drug_id: parseInt(document.getElementById('stockDrugId').value),
+                batch_number: document.getElementById('batchNumber').value,
+                supplier: document.getElementById('supplier').value,
+                quantity: parseInt(document.getElementById('stockQuantity').value),
+                expiry_date: document.getElementById('expiryDate').value,
+                purchase_price: parseFloat(document.getElementById('purchasePrice').value),
+                selling_price: parseFloat(document.getElementById('sellingPrice').value)
+            };
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/stock-in`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) { closeModal('stockInModal'); loadInventory(); alert('Stock received!'); }
+                else alert('Error: ' + data.error);
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        function openAddDrugModal() { openModal('addDrugModal'); }
+
+        async function submitAddDrug() {
+            const payload = {
+                name: document.getElementById('drugName').value,
+                generic_name: document.getElementById('genericName').value,
+                dosage_form: document.getElementById('dosageForm').value,
+                strength: document.getElementById('strength').value,
+                category: document.getElementById('category').value,
+                unit_of_measure: document.getElementById('unitMeasure').value,
+                reorder_level: parseInt(document.getElementById('reorderLevel').value)
+            };
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/drugs`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) { closeModal('addDrugModal'); loadDrugs(); alert('Drug added!'); }
+                else alert('Error: ' + data.error);
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function loadPendingPrescriptions() {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/pending-prescriptions`);
+                const data = await res.json();
+                renderPrescriptions(data.data);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderPrescriptions(rxList) {
+            document.getElementById('pendingPrescriptions').innerHTML = rxList.map(rx => `
+                <div class="prescription-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Prescription #${rx.id}</h6>
+                            <div class="text-muted small">Patient: <strong>${rx.patient_name}</strong> | MRN: ${rx.mrn}</div>
+                            <div class="text-muted small">Doctor: ${rx.doctor_name}</div>
+                        </div>
+                        <span class="badge bg-warning text-dark">${rx.pending_items} items pending</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary mt-3" onclick="openDispenseModal(${rx.id})"><i class="fas fa-pills me-1"></i> Dispense</button>
+                </div>
+            `).join('') || '<div class="text-muted">No pending prescriptions</div>';
+        }
+
+        async function openDispenseModal(prescriptionId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/prescriptions/${prescriptionId}`);
+                const data = await res.json();
+                currentPrescription = data.data;
+
+                document.getElementById('dispenseContent').innerHTML = `
+                    <div class="mb-3"><strong>Patient:</strong> ${currentPrescription.prescription.patient_name} | <strong>MRN:</strong> ${currentPrescription.prescription.mrn}</div>
+                    <div class="mb-3"><strong>Doctor:</strong> ${currentPrescription.prescription.doctor_name} | <strong>Date:</strong> ${new Date(currentPrescription.prescription.created_at).toLocaleDateString()}</div>
+                    <hr><h6 class="mb-3">Prescription Items</h6>
+                    ${currentPrescription.items.map((item, idx) => `
+                        <div class="border rounded p-3 mb-3" id="item-${idx}">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>${item.drug_name}</strong> <small class="text-muted">(${item.generic_name})</small>
+                                    <div class="small text-muted">${item.dosage} | ${item.duration}</div>
+                                    <div class="small text-info">${item.instructions}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div>Prescribed: <strong>${item.quantity_prescribed}</strong></div>
+                                    <div>Dispensed: <strong>${item.quantity_dispensed}</strong></div>
+                                    <div>Remaining: <strong class="text-primary">${item.quantity_prescribed - item.quantity_dispensed}</strong></div>
+                                </div>
+                            </div>
+                            <div class="mt-3" id="batch-select-${idx}">
+                                <label class="form-label small">Select Batch (FIFO)</label>
+                                <select class="form-select form-select-sm" id="batch-${idx}"><option value="">Loading batches...</option></select>
+                                <input type="number" class="form-control form-control-sm mt-2" id="qty-${idx}" placeholder="Quantity to dispense" min="1" max="${item.quantity_prescribed - item.quantity_dispensed}">
+                            </div>
+                        </div>
+                    `).join('')}`;
+
+                currentPrescription.items.forEach((item, idx) => {
+                    if (item.status !== 'dispensed') loadBatches(item.drug_id, idx);
+                    else document.getElementById(`batch-select-${idx}`).innerHTML = '<div class="text-success"><i class="fas fa-check"></i> Fully dispensed</div>';
+                });
+                openModal('dispenseModal');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadBatches(drugId, idx) {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/batches/${drugId}`);
+                const data = await res.json();
+                document.getElementById(`batch-${idx}`).innerHTML = data.data.map(b => 
+                    `<option value="${b.id}" data-qty="${b.quantity_remaining}">Batch: ${b.batch_number} | Qty: ${b.quantity_remaining} | Exp: ${b.expiry_date}</option>`
+                ).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function submitDispense() {
+            const items = [];
+            currentPrescription.items.forEach((item, idx) => {
+                if (item.status === 'dispensed') return;
+                const batchId = document.getElementById(`batch-${idx}`)?.value;
+                const qty = parseInt(document.getElementById(`qty-${idx}`)?.value);
+                if (batchId && qty > 0) items.push({ prescription_item_id: item.id, drug_id: item.drug_id, batch_id: parseInt(batchId), quantity: qty });
+            });
+            if (items.length === 0) { alert('Please select batches and quantities'); return; }
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/dispense`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prescription_id: currentPrescription.prescription.id, patient_id: currentPrescription.prescription.patient_id, items: items, notes: '' })
+                });
+                const data = await res.json();
+                if (data.success) { closeModal('dispenseModal'); loadPendingPrescriptions(); alert('Dispensing completed!'); }
+                else alert('Error: ' + data.error);
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function loadStockReport() {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/reports/stock-levels`);
+                const data = await res.json();
+                document.getElementById('stockReport').innerHTML = `
+                    <table class="table table-sm"><thead><tr><th>Drug</th><th>Stock</th><th>Status</th></tr></thead>
+                    <tbody>${data.data.map(r => `<tr><td>${r.name} <small class="text-muted">(${r.generic_name})</small></td><td>${r.current_stock}</td><td><span class="badge ${r.status === 'OK' ? 'bg-success' : r.status === 'LOW STOCK' ? 'bg-warning' : 'bg-danger'}">${r.status}</span></td></tr>`).join('')}</tbody></table>`;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadExpiryReport() {
+            try {
+                const res = await fetch(`${API_BASE}/api/pharmacy/reports/expiry`);
+                const data = await res.json();
+                document.getElementById('expiryReport').innerHTML = data.data.map(r => `
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <div><strong>${r.drug_name}</strong> <small class="text-muted">(${r.batch_number})</small></div>
+                        <div class="${r.days_remaining < 30 ? 'text-danger fw-bold' : 'text-warning'}">${Math.round(r.days_remaining)} days (${r.expiry_date})</div>
+                    </div>
+                `).join('') || '<div class="text-muted">No expiring batches</div>';
+            } catch (e) { console.error(e); }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
