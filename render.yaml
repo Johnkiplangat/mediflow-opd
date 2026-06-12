@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: mediflow-opd
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mediflow-db
+          property: connectionString
+
+databases:
+  - name: mediflow-db
+    plan: free
+    ipAllowList: []

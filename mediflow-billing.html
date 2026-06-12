@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow OPD — Billing & Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
+            color: white;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .sidebar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+        .sidebar-brand i { color: var(--primary); }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* ─── Main Content ─── */
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem 2rem;
+        }
+
+        /* ─── Top Bar ─── */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .page-title { font-size: 1.5rem; font-weight: 700; color: var(--dark); }
+
+        /* ─── Cards ─── */
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            background: white;
+        }
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+        .card-header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .card-header-title i { color: var(--primary); }
+        .card-body { padding: 1.5rem; }
+
+        /* ─── Invoice Styles ─── */
+        .invoice-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .invoice-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .invoice-brand-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        .invoice-brand-name { font-size: 1.5rem; font-weight: 800; color: var(--dark); }
+        .invoice-brand-sub { font-size: 0.8rem; color: #94a3b8; }
+        .invoice-meta {
+            text-align: right;
+        }
+        .invoice-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .invoice-date { font-size: 0.875rem; color: #94a3b8; }
+        .invoice-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.875rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .status-paid { background: #f0fdf4; color: var(--success); }
+        .status-partial { background: #fffbeb; color: var(--warning); }
+        .status-unpaid { background: #fef2f2; color: var(--danger); }
+
+        .invoice-patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .info-block h6 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .info-block p {
+            margin: 0;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .info-block small {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .invoice-table {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        .invoice-table th {
+            background: #f8fafc;
+            padding: 0.875rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+            text-align: left;
+        }
+        .invoice-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .invoice-table tr:last-child td { border-bottom: 2px solid var(--border); }
+        .item-name { font-weight: 700; color: var(--dark); }
+        .item-desc { font-size: 0.8rem; color: #94a3b8; }
+        .item-qty { text-align: center; }
+        .item-price, .item-total { text-align: right; font-weight: 600; }
+
+        .invoice-summary {
+            width: 350px;
+            margin-left: auto;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.625rem 0;
+            font-size: 0.9375rem;
+        }
+        .summary-row.discount { color: var(--success); }
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--dark);
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+        .summary-row.balance {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        /* ─── Payment Form ─── */
+        .payment-methods {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .payment-method {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        .payment-method:hover { border-color: var(--primary); }
+        .payment-method.active {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .payment-method i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .payment-method span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 1.5px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+        .btn-outline-custom {
+            border: 2px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            color: #64748b;
+            background: white;
+        }
+        .btn-outline-custom:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn-success-custom {
+            background: var(--success);
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* ─── Receipt Modal ─── */
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .receipt-modal.active { display: flex; }
+        .receipt-content {
+            background: white;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        .receipt-stamp {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-weight: 800;
+            font-size: 0.9rem;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+        }
+
+        /* ─── Print Styles ─── */
+        @media print {
+            .sidebar, .top-bar, .payment-section, .action-buttons { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .invoice-container { box-shadow: none !important; }
+        }
+
+        @media (max-width: 991px) {
+            .sidebar { width: 70px; padding: 1rem 0.5rem; }
+            .sidebar-brand span, .nav-item span { display: none; }
+            .main-content { margin-left: 70px; padding: 1rem; }
+            .invoice-patient-info { grid-template-columns: 1fr; }
+            .invoice-summary { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+    <a href="#" class="sidebar-brand">
+        <i class="fas fa-heart-pulse"></i>
+        <span>MediFlow</span>
+    </a>
+    <a href="mediflow-dashboard.html" class="nav-item">
+        <i class="fas fa-gauge-high"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-users"></i>
+        <span>Patients</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-hospital-user"></i>
+        <span>Visits</span>
+    </a>
+    <a href="mediflow-consultation-ui.html" class="nav-item">
+        <i class="fas fa-stethoscope"></i>
+        <span>Consultations</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-flask"></i>
+        <span>Laboratory</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-pills"></i>
+        <span>Pharmacy</span>
+    </a>
+    <a href="mediflow-billing.html" class="nav-item active">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Billing</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
+    </a>
+    <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <a href="#" class="nav-item">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
+        </a>
+        <a href="mediflow-login.html" class="nav-item" onclick="logout()">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div>
+            <h1 class="page-title">Billing & Receipt</h1>
+            <p style="color: #94a3b8; font-size: 0.875rem; margin: 0;">Invoice #INV-2026-00045</p>
+        </div>
+        <div class="action-buttons" style="display: flex; gap: 0.75rem;">
+            <button class="btn-outline-custom" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Invoice
+            </button>
+            <button class="btn-outline-custom" onclick="sendReceipt()">
+                <i class="fas fa-paper-plane me-2"></i>Send Receipt
+            </button>
+            <button class="btn-primary-custom" onclick="completeVisit()">
+                <i class="fas fa-check-circle me-2"></i>Complete Visit
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Invoice -->
+            <div class="invoice-container">
+                <div class="invoice-header">
+                    <div class="invoice-brand">
+                        <div class="invoice-brand-icon"><i class="fas fa-heart-pulse"></i></div>
+                        <div>
+                            <div class="invoice-brand-name">MediFlow Hospital</div>
+                            <div class="invoice-brand-sub">Outpatient Department</div>
+                        </div>
+                    </div>
+                    <div class="invoice-meta">
+                        <div class="invoice-number">INV-2026-00045</div>
+                        <div class="invoice-date">June 11, 2026 at 10:25 AM</div>
+                        <span class="invoice-status status-partial">
+                            <i class="fas fa-clock"></i> Partially Paid
+                        </span>
+                    </div>
+                </div>
+
+                <div class="invoice-patient-info">
+                    <div class="info-block">
+                        <h6>Billed To</h6>
+                        <p>Amara Nwosu</p>
+                        <small>PAT-2026-00001 • Female, 36 years</small><br>
+                        <small>0244123456 • amara.nwosu@email.com</small><br>
+                        <small>NHIS: GH-NHIS-1234-5678</small>
+                    </div>
+                    <div class="info-block">
+                        <h6>Visit Information</h6>
+                        <p>Visit V-2026-00001</p>
+                        <small>Queue #12 • Dr. Kwame Asante</small><br>
+                        <small>Chief Complaint: Fever, chills, body aches</small>
+                    </div>
+                </div>
+
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Description</th>
+                            <th style="width: 15%;" class="text-center">Qty</th>
+                            <th style="width: 17.5%;" class="text-end">Unit Price</th>
+                            <th style="width: 17.5%;" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="item-name">OPD Consultation Fee</div>
+                                <div class="item-desc">General medical consultation</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵35.00</td>
+                            <td class="item-total">₵35.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Malaria Rapid Diagnostic Test (RDT)</div>
+                                <div class="item-desc">Lab test ordered during consultation</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵25.00</td>
+                            <td class="item-total">₵25.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Full Blood Count (FBC)</div>
+                                <div class="item-desc">Complete blood count with differential</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵45.00</td>
+                            <td class="item-total">₵45.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Artemether-Lumefantrine 80/480mg</div>
+                                <div class="item-desc">Antimalarial - 12 tablets, 3-day course</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵28.00</td>
+                            <td class="item-total">₵28.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Paracetamol 500mg</div>
+                                <div class="item-desc">Pain relief - 12 tablets</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵8.00</td>
+                            <td class="item-total">₵8.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Dental Consultation Fee</div>
+                                <div class="item-desc">Dental examination and charting</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵40.00</td>
+                            <td class="item-total">₵40.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Ibuprofen 400mg</div>
+                                <div class="item-desc">Anti-inflammatory - 15 tablets</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵12.00</td>
+                            <td class="item-total">₵12.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-name">Amoxicillin 500mg</div>
+                                <div class="item-desc">Antibiotic prophylaxis - 10 capsules</div>
+                            </td>
+                            <td class="item-qty">1</td>
+                            <td class="item-price">₵18.00</td>
+                            <td class="item-total">₵18.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="invoice-summary">
+                    <div class="summary-row">
+                        <span style="color: #64748b;">Subtotal</span>
+                        <span style="font-weight: 600;">₵211.00</span>
+                    </div>
+                    <div class="summary-row discount">
+                        <span><i class="fas fa-tag me-1"></i>NHIS Coverage (50%)</span>
+                        <span>-₵105.50</span>
+                    </div>
+                    <div class="summary-row">
+                        <span style="color: #64748b;">Discount</span>
+                        <span style="font-weight: 600;">₵0.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Due</span>
+                        <span>₵105.50</span>
+                    </div>
+                    <div class="summary-row">
+                        <span style="color: #64748b;">Amount Paid</span>
+                        <span style="font-weight: 600; color: var(--success);">₵67.00</span>
+                    </div>
+                    <div class="summary-row balance">
+                        <span>Balance Due</span>
+                        <span>₵38.50</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <h6 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; font-weight: 700; margin-bottom: 0.75rem;">
+                        <i class="fas fa-circle-info me-1"></i>Payment History
+                    </h6>
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 0.5rem;">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">Insurance Payment</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">NHIS-CLAIM-2026-001 • June 11, 2026</div>
+                        </div>
+                        <div style="font-weight: 700; color: var(--success);">₵67.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Payment Section -->
+            <div class="card payment-section">
+                <div class="card-header">
+                    <div class="card-header-title">
+                        <i class="fas fa-credit-card"></i>
+                        Record Payment
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <div class="payment-methods">
+                            <div class="payment-method active" onclick="selectPayment(this, 'cash')">
+                                <i class="fas fa-money-bill-wave text-success"></i>
+                                <span>Cash</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPayment(this, 'momo')">
+                                <i class="fas fa-mobile-screen text-primary"></i>
+                                <span>Mobile Money</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPayment(this, 'insurance')">
+                                <i class="fas fa-shield-halved text-info"></i>
+                                <span>Insurance</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPayment(this, 'card')">
+                                <i class="fas fa-credit-card text-warning"></i>
+                                <span>Card</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Amount to Pay (₵)</label>
+                        <input type="number" class="form-control" id="payment-amount" value="38.50" step="0.01">
+                        <small class="text-muted">Balance due: ₵38.50</small>
+                    </div>
+
+                    <div class="mb-3" id="insurance-fields" style="display: none;">
+                        <label class="form-label">Insurance Claim Number</label>
+                        <input type="text" class="form-control" placeholder="e.g., NHIS-CLAIM-2026-001">
+                        <label class="form-label mt-2">Insurance Provider</label>
+                        <select class="form-select">
+                            <option>NHIS</option>
+                            <option>Private Insurance</option>
+                            <option>Corporate</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="momo-fields" style="display: none;">
+                        <label class="form-label">Mobile Money Number</label>
+                        <input type="tel" class="form-control" placeholder="0244XXXXXX">
+                        <label class="form-label mt-2">Provider</label>
+                        <select class="form-select">
+                            <option>MTN Mobile Money</option>
+                            <option>Vodafone Cash</option>
+                            <option>AirtelTigo Money</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" rows="2" placeholder="Payment notes..."></textarea>
+                    </div>
+
+                    <button class="btn-success-custom w-100" onclick="recordPayment()">
+                        <i class="fas fa-check-circle me-2"></i>Record Payment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Invoice Breakdown
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0; border-bottom: 1px solid var(--border);">
+                            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-stethoscope text-primary"></i>
+                                <span style="font-size: 0.875rem;">Consultations</span>
+                            </span>
+                            <span style="font-weight: 700;">₵75.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0; border-bottom: 1px solid var(--border);">
+                            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-flask text-info"></i>
+                                <span style="font-size: 0.875rem;">Laboratory</span>
+                            </span>
+                            <span style="font-weight: 700;">₵70.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0; border-bottom: 1px solid var(--border);">
+                            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-pills text-success"></i>
+                                <span style="font-size: 0.875rem;">Pharmacy</span>
+                            </span>
+                            <span style="font-weight: 700;">₵66.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0;">
+                            <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-percent text-warning"></i>
+                                <span style="font-size: 0.875rem;">Insurance Cover</span>
+                            </span>
+                            <span style="font-weight: 700; color: var(--success);">-₵105.50</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- RECEIPT MODAL -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="receipt-modal" id="receipt-modal">
+    <div class="receipt-content">
+        <div class="receipt-stamp">PAID</div>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--info)); border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+                <i class="fas fa-heart-pulse"></i>
+            </div>
+            <h3 style="font-weight: 800; color: var(--dark); margin-bottom: 0.25rem;">MediFlow Hospital</h3>
+            <p style="color: #94a3b8; font-size: 0.875rem; margin: 0;">Payment Receipt</p>
+        </div>
+
+        <div style="background: #f8fafc; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: #94a3b8; font-size: 0.875rem;">Receipt No</span>
+                <span style="font-weight: 700;">RCP-2026-00189</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: #94a3b8; font-size: 0.875rem;">Date</span>
+                <span style="font-weight: 600;">June 11, 2026 • 11:45 AM</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #94a3b8; font-size: 0.875rem;">Patient</span>
+                <span style="font-weight: 600;">Amara Nwosu (PAT-2026-00001)</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+                <span>Amount Paid</span>
+                <span style="font-weight: 700;">₵105.50</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+                <span>Payment Method</span>
+                <span style="font-weight: 600;">Cash</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                <span>Served By</span>
+                <span style="font-weight: 600;">Admin User</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 1rem; border-top: 2px dashed var(--border);">
+            <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.5rem;">Thank you for choosing MediFlow Hospital</p>
+            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0;">For inquiries: info@mediflow.local • 0302-000-000</p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+            <button class="btn-outline-custom flex-fill" onclick="closeReceipt()">Close</button>
+            <button class="btn-primary-custom flex-fill" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Receipt
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;" id="toast-container"></div>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:4000' : 'https://mediflow-opd-1-backend.onrender.com';
+
+function selectPayment(el, method) {
+    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+    el.classList.add('active');
+
+    document.getElementById('insurance-fields').style.display = method === 'insurance' ? 'block' : 'none';
+    document.getElementById('momo-fields').style.display = method === 'momo' ? 'block' : 'none';
+}
+
+async function recordPayment() {
+    const amount = document.getElementById('payment-amount').value;
+    showToast(`Recording payment of ₵${amount}...`, 'info');
+
+    // Simulate API call
+    setTimeout(() => {
+        showToast('Payment recorded successfully!', 'success');
+        document.querySelector('.invoice-status').className = 'invoice-status status-paid';
+        document.querySelector('.invoice-status').innerHTML = '<i class="fas fa-check-circle"></i> Paid';
+        showReceipt();
+    }, 1000);
+}
+
+function showReceipt() {
+    document.getElementById('receipt-modal').classList.add('active');
+}
+
+function closeReceipt() {
+    document.getElementById('receipt-modal').classList.remove('active');
+}
+
+function sendReceipt() {
+    showToast('Receipt sent via SMS and Email', 'success');
+}
+
+function completeVisit() {
+    if (confirm('Mark this visit as complete? This will send discharge instructions to the patient.')) {
+        showToast('Visit completed! Discharge instructions sent.', 'success');
+        setTimeout(() => {
+            window.location.href = 'mediflow-dashboard.html';
+        }, 1500);
+    }
+}
+
+function logout() {
+    localStorage.clear();
+}
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.style.cssText = 'background: white; border-radius: 0.75rem; padding: 1rem 1.25rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 0.875rem; min-width: 300px; animation: slideIn 0.3s ease; margin-bottom: 0.75rem;';
+    const icons = { success: 'fa-circle-check text-success', error: 'fa-circle-xmark text-danger', info: 'fa-circle-info text-primary' };
+    toast.innerHTML = `<i class="fas ${icons[type]}"></i><div style="font-weight: 600;">${message}</div>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+</script>
+
+</body>
+</html>

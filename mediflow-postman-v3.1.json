@@ -1,0 +1,1853 @@
+{
+  "info": {
+    "name": "MediFlow OPD API v3.0",
+    "description": "Complete API collection for MediFlow Outpatient Hospital Management System.\n\n**Setup:**\n1. Set `base_url` variable to `http://localhost:4000` (dev) or your production domain\n2. Run the **Login** request first \u2014 the token auto-saves to `{{token}}`\n3. **Consultations:** Run Medical or Dental consultation requests after Triage.\\n3. All other requests use `{{token}}` automatically\n\n**Demo credentials:**\n- Admin: admin@mediflow.local / admin123\n- Doctor: doctor@mediflow.local / doctor123\n- Receptionist: triage@mediflow.local / triage123",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "mediflow-opd-v3"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "visit_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "invoice_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apt_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "medical_consultation_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "dental_consultation_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "\ud83d\udd10 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const b = pm.response.json();",
+                  "  pm.collectionVariables.set('token', b.token);",
+                  "  pm.collectionVariables.set('refresh', b.refreshToken);",
+                  "  pm.test('Login successful', () => pm.expect(b).to.have.property('token'));",
+                  "  pm.test('User role returned', () => pm.expect(b.user).to.have.property('role'));",
+                  "  console.log('Logged in as:', b.user.name, '(' + b.user.role + ')');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@mediflow.local\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().token);",
+                  "  pm.test('New token issued', () => pm.expect(pm.response.json()).to.have.property('token'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/refresh",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/change-password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"admin123\",\n  \"new_password\": \"NewSecure456!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is ok', () => pm.expect(pm.response.json().status).to.equal('ok'));",
+                  "pm.test('DB connected',  () => pm.expect(pm.response.json().db).to.equal('connected'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udc64 Patients",
+      "item": [
+        {
+          "name": "Register Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('patient_id', pm.response.json().id);",
+                  "  pm.test('Patient registered', () => pm.expect(pm.response.json()).to.have.property('patient_no'));",
+                  "  pm.test('Patient no format', () => pm.expect(pm.response.json().patient_no).to.match(/^PAT-\\d{4}-\\d{5}$/));",
+                  "  console.log('Patient ID:', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/patients",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Amara\",\n  \"last_name\": \"Nwosu\",\n  \"date_of_birth\": \"1990-03-12\",\n  \"gender\": \"female\",\n  \"phone\": \"0244123456\",\n  \"email\": \"amara.nwosu@email.com\",\n  \"blood_group\": \"A+\",\n  \"allergies\": \"Penicillin\",\n  \"chronic_conditions\": \"Hypertension\",\n  \"emergency_name\": \"Chidi Nwosu\",\n  \"emergency_phone\": \"0201987654\",\n  \"emergency_rel\": \"Husband\",\n  \"insurance_provider\": \"NHIS\",\n  \"insurance_policy\": \"GH-NHIS-1234-5678\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Patients",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has pagination', () => pm.expect(pm.response.json()).to.have.property('page'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/patients?page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Search Patients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/patients?search=Amara",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Amara"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Patient by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has visits array', () => pm.expect(pm.response.json()).to.have.property('visits'));",
+                  "pm.test('Has patient no', () => pm.expect(pm.response.json()).to.have.property('patient_no'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/patients/{{patient_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/api/patients/{{patient_id}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"0244999888\",\n  \"allergies\": \"Penicillin, Aspirin\",\n  \"insurance_policy\": \"GH-NHIS-9999-0000\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83c\udfe5 Visits & Triage",
+      "item": [
+        {
+          "name": "Create Visit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('visit_id', pm.response.json().id);",
+                  "  pm.test('Visit created', () => pm.expect(pm.response.json().visit_no).to.match(/^V-\\d{4}-\\d{5}$/));",
+                  "  pm.test('Queue number assigned', () => pm.expect(pm.response.json().queue_number).to.be.a('number'));",
+                  "  console.log('Visit ID:', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/visits",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"chief_complaint\": \"Fever, chills, body aches\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Today's Visits",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/visits?date=today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "visits"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "today"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Visits by Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/visits?status=triage&date=today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "visits"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "triage"
+                },
+                {
+                  "key": "date",
+                  "value": "today"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Visit by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/visits/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Visit Status",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/visits/{{visit_id}}/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"billing_consult\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Record Triage Vitals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Triage recorded', () => pm.expect(pm.response.code).to.equal(201));",
+                  "pm.test('Temperature saved', () => pm.expect(pm.response.json()).to.have.property('temperature'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/triage",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"chief_complaint\": \"Fever, chills, body aches for 3 days\",\n  \"blood_pressure\": \"110/70\",\n  \"temperature\": 38.9,\n  \"heart_rate\": 104,\n  \"weight\": 58,\n  \"height\": 165,\n  \"oxygen_sat\": 98,\n  \"pain_score\": 5\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Triage by Visit",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/triage/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83e\ude7a Consultations",
+      "item": [
+        {
+          "name": "Create Medical Consultation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const b = pm.response.json();",
+                  "  pm.collectionVariables.set('medical_consultation_id', b.data.id);",
+                  "  pm.test('Consultation created', () => pm.expect(b.data).to.have.property('id'));",
+                  "  pm.test('Has consultation type', () => pm.expect(b.data.consultation_type).to.equal('medical'));",
+                  "  pm.test('Status is in_progress', () => pm.expect(b.data.status).to.equal('in_progress'));",
+                  "  console.log('Medical Consultation ID:', b.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/consultations",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"consultation_type\": \"medical\",\n  \"doctor_id\": \"REPLACE_WITH_DOCTOR_USER_ID\",\n  \"chief_complaint\": \"Fever, chills, body aches for 3 days\",\n  \"history_of_present_illness\": \"Patient reports fever starting 3 days ago with chills and generalized body aches. No vomiting.\",\n  \"examination_findings\": \"Temp 38.9\u00b0C, pale conjunctivae, tender hepatomegaly\",\n  \"diagnosis\": \"Uncomplicated Plasmodium falciparum malaria\",\n  \"diagnosis_icd10\": \"B50.9\",\n  \"notes\": \"Start ACT immediately. Review in 3 days.\",\n  \"follow_up_required\": true,\n  \"follow_up_date\": \"2026-06-18\",\n  \"use_ai\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Dental Consultation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const b = pm.response.json();",
+                  "  pm.collectionVariables.set('dental_consultation_id', b.data.id);",
+                  "  pm.test('Dental consultation created', () => pm.expect(b.data).to.have.property('id'));",
+                  "  pm.test('Has dental chart', () => pm.expect(b.data).to.have.property('dental_chart'));",
+                  "  console.log('Dental Consultation ID:', b.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/consultations",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"consultation_type\": \"dental\",\n  \"doctor_id\": \"REPLACE_WITH_DENTIST_USER_ID\",\n  \"chief_complaint\": \"Toothache, lower left jaw for 2 days\",\n  \"examination_findings\": \"Tooth #36 \u2014 deep caries, positive percussion, no swelling\",\n  \"dental_chart\": {\n    \"tooth_number\": 36,\n    \"condition\": \"deep caries with pulpitis\",\n    \"treatment_plan\": \"root canal therapy or extraction\"\n  },\n  \"dental_procedure\": \"Composite filling pending RCT decision\",\n  \"diagnosis\": \"Chronic apical periodontitis, tooth #36\",\n  \"diagnosis_icd10\": \"K04.5\",\n  \"notes\": \"Patient prefers to save tooth. Schedule RCT.\",\n  \"follow_up_required\": true,\n  \"follow_up_date\": \"2026-06-20\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Consultations by Visit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has consultation data', () => pm.expect(pm.response.json().data.length).to.be.greaterThan(0));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/consultations/visit/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Single Consultation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has consultation data', () => pm.expect(pm.response.json().data).to.have.property('id'));",
+                  "pm.test('Has lab orders', () => pm.expect(pm.response.json().data).to.have.property('lab_orders'));",
+                  "pm.test('Has prescriptions', () => pm.expect(pm.response.json().data).to.have.property('prescriptions'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/consultations/{{medical_consultation_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Consultation (Add Diagnosis)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/consultations/{{medical_consultation_id}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnosis\": \"Confirmed uncomplicated malaria - RDT positive\",\n  \"notes\": \"Patient responding well to ACT. Hemoglobin stable at 13.4.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Complete Consultation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is completed', () => pm.expect(pm.response.json().data.status).to.equal('completed'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/consultations/{{medical_consultation_id}}/complete",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"final_diagnosis\": \"Uncomplicated Plasmodium falciparum malaria - fully treated\",\n  \"final_notes\": \"Patient completed 3-day ACT course. Afebrile on day 3. Discharged.\",\n  \"next_appointment_date\": \"2026-06-25\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get AI Diagnosis Suggestions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has differential diagnoses', () => pm.expect(pm.response.json().data).to.have.property('differential'));",
+                  "pm.test('Has recommended tests', () => pm.expect(pm.response.json().data).to.have.property('recommended_tests'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/consultations/{{medical_consultation_id}}/ai-suggest",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "List All Consultations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultations?page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultations"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Filter by Type (Medical)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultations?consultation_type=medical",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultations"
+              ],
+              "query": [
+                {
+                  "key": "consultation_type",
+                  "value": "medical"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Filter by Type (Dental)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultations?consultation_type=dental",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultations"
+              ],
+              "query": [
+                {
+                  "key": "consultation_type",
+                  "value": "dental"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Doctor Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultations/stats/doctor/REPLACE_WITH_DOCTOR_ID?date_from=2026-06-01&date_to=2026-06-30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultations",
+                "stats",
+                "doctor",
+                "REPLACE_WITH_DOCTOR_ID"
+              ],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2026-06-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-06-30"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cancel Consultation",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/consultations/{{medical_consultation_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udd2c Laboratory",
+      "item": [
+        {
+          "name": "Get Lab Catalog",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/lab/catalog",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Order Lab Tests",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/lab/orders",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"consultation_id\": null,\n  \"test_ids\": [\"REPLACE_WITH_TEST_ID_FROM_CATALOG\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Lab Orders for Visit",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/lab/orders/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Enter Lab Result (Normal)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/lab/orders/REPLACE_WITH_ORDER_ID/result",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"result_value\": \"WBC 6.2, RBC 4.8, Hgb 13.4\",\n  \"result_unit\": \"\u00d710\u2079/L\",\n  \"reference_range\": \"4.0\u201311.0\",\n  \"flag\": \"normal\",\n  \"result_notes\": \"All values within normal range\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Enter Lab Result (Critical)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/lab/orders/REPLACE_WITH_ORDER_ID/result",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"result_value\": \"POSITIVE \u2014 P. falciparum\",\n  \"flag\": \"critical\",\n  \"result_notes\": \"Immediate treatment required\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udc8a Pharmacy",
+      "item": [
+        {
+          "name": "List Drugs (Inventory)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/pharmacy/drugs",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Search Drugs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/pharmacy/drugs?search=Paracetamol",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pharmacy",
+                "drugs"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Paracetamol"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Prescription",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/pharmacy/prescriptions",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"consultation_id\": null,\n  \"items\": [\n    {\n      \"drug_id\": \"REPLACE_WITH_DRUG_ID\",\n      \"dosage\": \"80/480mg\",\n      \"frequency\": \"Twice daily (AM & PM)\",\n      \"duration\": \"3 days\",\n      \"quantity\": 12,\n      \"notes\": \"Take with food\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Prescriptions for Visit",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/pharmacy/prescriptions/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Dispense Prescription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) pm.test('Dispensed', () => pm.expect(pm.response.json().status).to.equal('dispensed'));",
+                  "if (pm.response.code === 409) pm.test('Out of stock handled', () => pm.expect(pm.response.json().status).to.equal('out_of_stock'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/pharmacy/prescriptions/REPLACE_WITH_RX_ID/dispense",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Adjust Stock",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/inventory/drugs/REPLACE_WITH_DRUG_ID/adjust",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"delta\": 200,\n  \"reason\": \"Stock count correction\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Stock Movements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventory/movements?limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83e\uddfe Billing",
+      "item": [
+        {
+          "name": "Create Invoice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('invoice_id', pm.response.json().invoice.id);",
+                  "  pm.test('Invoice created', () => pm.expect(pm.response.json().invoice).to.have.property('invoice_no'));",
+                  "  pm.test('Has line items', () => pm.expect(pm.response.json().line_items.length).to.be.greaterThan(0));",
+                  "  console.log('Invoice ID:', pm.response.json().invoice.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/billing/invoices",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visit_id\": \"{{visit_id}}\",\n  \"insurance_cover\": 50,\n  \"discount\": 0,\n  \"pay_method\": \"insurance\",\n  \"insurance_provider\": \"NHIS\",\n  \"notes\": \"Standard OPD visit\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Invoice for Visit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has invoice', () => pm.expect(pm.response.json()).to.have.property('invoice'));",
+                  "pm.test('Has line items', () => pm.expect(pm.response.json()).to.have.property('line_items'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/billing/invoices/{{visit_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Record Full Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payment status', () => pm.expect(['paid','partial']).to.include(pm.response.json().pay_status));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/billing/invoices/{{invoice_id}}/payment",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount_paid\": 67.00,\n  \"pay_method\": \"insurance\",\n  \"insurance_claim_no\": \"NHIS-CLAIM-2026-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Record Partial Payment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/billing/invoices/{{invoice_id}}/payment",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount_paid\": 30.00,\n  \"pay_method\": \"cash\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Daily Revenue Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has billed amount', () => pm.expect(pm.response.json()).to.have.property('billed'));",
+                  "pm.test('Has collected amount', () => pm.expect(pm.response.json()).to.have.property('collected'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/billing/summary?date=today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "billing",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "today"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcc5 Appointments",
+      "item": [
+        {
+          "name": "Book Appointment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('apt_id', pm.response.json().id);",
+                  "  pm.test('Appointment confirmed', () => pm.expect(pm.response.json().status).to.equal('confirmed'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/appointments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"doctor_id\": \"REPLACE_WITH_DOCTOR_USER_ID\",\n  \"appointment_date\": \"2026-06-15\",\n  \"appointment_time\": \"09:00\",\n  \"appointment_type\": \"Follow-up\",\n  \"duration_minutes\": 30,\n  \"notes\": \"Hypertension review \u2014 bring BP log\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Today's Appointments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/appointments?date=today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "appointments"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "today"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Appointments by Date",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/appointments?date=2026-06-15",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "appointments"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-06-15"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Check In Patient",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/appointments/{{apt_id}}/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"waiting\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/appointments/{{apt_id}}/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udce6 Inventory",
+      "item": [
+        {
+          "name": "List All Drugs",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/inventory/drugs",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Filter Low Stock",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventory/drugs?status=low",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "drugs"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "low"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Filter Out of Stock",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventory/drugs?status=out",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "drugs"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "out"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Purchase Order",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/inventory/purchase-orders",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supplier_id\": \"REPLACE_WITH_SUPPLIER_ID\",\n  \"expected_date\": \"2026-06-20\",\n  \"notes\": \"Monthly restock\",\n  \"items\": [\n    { \"drug_id\": \"REPLACE_WITH_DRUG_ID\", \"quantity\": 500, \"unit_cost\": 0.30 },\n    { \"drug_id\": \"REPLACE_WITH_DRUG_ID_2\", \"quantity\": 200, \"unit_cost\": 3.50 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Receive Delivery",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/inventory/purchase-orders/REPLACE_WITH_PO_ID/receive",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Stock Movements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inventory/movements?limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udce8 Communications",
+      "item": [
+        {
+          "name": "Send Appointment Confirmation",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/appointment/confirmed",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"appointment_id\": \"{{apt_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Lab Results Notification",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/lab/results-ready",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"visit_id\": \"{{visit_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Payment Receipt",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/billing/receipt",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"invoice_id\": \"{{invoice_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Discharge Instructions",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/discharge",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"visit_id\": \"{{visit_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Custom Message",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/send-custom",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"{{patient_id}}\",\n  \"channel\": \"both\",\n  \"subject\": \"Important notice from MediFlow Hospital\",\n  \"message\": \"Dear Patient, please remember to collect your medication from our pharmacy.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Trigger Appointment Reminders",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/comms/reminders/run",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Communication Log",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/comms/log?patient_id={{patient_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "comms",
+                "log"
+              ],
+              "query": [
+                {
+                  "key": "patient_id",
+                  "value": "{{patient_id}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcca Analytics",
+      "item": [
+        {
+          "name": "Revenue & Visit Summary (12 days)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Has visits data', () => pm.expect(pm.response.json()).to.have.property('visits'));",
+                  "pm.test('Has revenue data', () => pm.expect(pm.response.json()).to.have.property('revenue'));",
+                  "pm.test('Has top diagnoses', () => pm.expect(pm.response.json()).to.have.property('topDx'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/analytics/summary?days=12",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "analytics",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "12"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\u2699\ufe0f Admin",
+      "item": [
+        {
+          "name": "List All Staff",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/users",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Staff User",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Dr. New Doctor\",\n  \"email\": \"newdoctor@mediflow.local\",\n  \"password\": \"SecurePass123!\",\n  \"role\": \"doctor\",\n  \"department\": \"Medical\",\n  \"phone\": \"0244000000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/users/REPLACE_WITH_USER_ID/active",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset User Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/users/REPLACE_WITH_USER_ID/reset-password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_password\": \"TempPass789!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Audit Log",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/audit-log?limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "audit-log"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

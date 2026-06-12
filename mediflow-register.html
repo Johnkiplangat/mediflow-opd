@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow OPD — Patient Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
+            color: white;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .sidebar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+        .sidebar-brand i { color: var(--primary); }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9375rem;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* ─── Main Content ─── */
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem 2rem;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .page-title { font-size: 1.5rem; font-weight: 700; color: var(--dark); }
+
+        /* ─── Mode Toggle ─── */
+        .mode-toggle {
+            display: flex;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+        .mode-btn {
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .mode-btn:hover { background: #f8fafc; }
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ─── Cards ─── */
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            background: white;
+        }
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+        .card-header i { color: var(--primary); }
+        .card-body { padding: 1.5rem; }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 1.5px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        textarea.form-control { min-height: 80px; resize: vertical; }
+
+        .input-group-text {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-right: none;
+            border-radius: 0.625rem 0 0 0.625rem;
+            color: #94a3b8;
+        }
+        .input-group .form-control {
+            border-left: none;
+            border-radius: 0 0.625rem 0.625rem 0;
+        }
+
+        /* ─── Photo Upload ─── */
+        .photo-upload {
+            width: 120px; height: 120px;
+            border: 2px dashed var(--border);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+        .photo-upload:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .photo-upload i {
+            font-size: 2rem;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+        .photo-upload span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .photo-upload img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .photo-upload.has-photo i,
+        .photo-upload.has-photo span { display: none; }
+
+        /* ─── Section Headers ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .section-number {
+            width: 32px; height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        .section-title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        /* ─── Allergies Tags ─── */
+        .allergy-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .allergy-tag {
+            padding: 0.375rem 0.875rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            cursor: pointer;
+        }
+        .allergy-tag:hover { background: #fee2e2; }
+        .allergy-tag i { font-size: 0.7rem; }
+
+        /* ─── Quick Search Results ─── */
+        .search-results {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .search-result-item:hover {
+            background: #f8fafc;
+        }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .search-info { flex: 1; }
+        .search-name { font-weight: 700; color: var(--dark); }
+        .search-meta { font-size: 0.8rem; color: #94a3b8; }
+        .search-action {
+            padding: 0.4rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ─── Buttons ─── */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem 2.5rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+        .btn-outline-custom {
+            border: 2px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.875rem 2.5rem;
+            font-weight: 600;
+            color: #64748b;
+            background: white;
+        }
+        .btn-outline-custom:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ─── Success Modal ─── */
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .success-modal.active { display: flex; }
+        .success-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            padding: 3rem;
+            text-align: center;
+            animation: popIn 0.4s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .success-icon {
+            width: 80px; height: 80px;
+            background: #f0fdf4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--success);
+        }
+        .patient-card-preview {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        /* ─── Toast ─── */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+        }
+        .mediflow-toast {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            min-width: 320px;
+            animation: slideIn 0.3s ease;
+            margin-bottom: 0.75rem;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .section-hidden { display: none !important; }
+
+        @media (max-width: 991px) {
+            .sidebar { width: 70px; padding: 1rem 0.5rem; }
+            .sidebar-brand span, .nav-item span { display: none; }
+            .main-content { margin-left: 70px; padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+    <a href="index.html" class="sidebar-brand">
+        <i class="fas fa-heart-pulse"></i>
+        <span>MediFlow</span>
+    </a>
+    <a href="mediflow-dashboard.html" class="nav-item">
+        <i class="fas fa-gauge-high"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="mediflow-register.html" class="nav-item active">
+        <i class="fas fa-user-plus"></i>
+        <span>Register Patient</span>
+    </a>
+    <a href="mediflow-dashboard.html" class="nav-item">
+        <i class="fas fa-hospital-user"></i>
+        <span>Visits</span>
+    </a>
+    <a href="mediflow-consultation-ui.html" class="nav-item">
+        <i class="fas fa-stethoscope"></i>
+        <span>Consultations</span>
+    </a>
+    <a href="mediflow-billing.html" class="nav-item">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Billing</span>
+    </a>
+    <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <a href="mediflow-login.html" class="nav-item" onclick="logout()">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div>
+            <h1 class="page-title">Patient Registration</h1>
+            <p style="color: #94a3b8; font-size: 0.875rem; margin: 0;">Register a new patient or find an existing one</p>
+        </div>
+        <div class="user-menu">
+            <div class="notification-bell" style="position: relative; width: 40px; height: 40px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); color: #64748b;">
+                <i class="fas fa-bell"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn active" onclick="switchMode('new')" id="btn-new">
+            <i class="fas fa-user-plus"></i> New Patient
+        </button>
+        <button class="mode-btn" onclick="switchMode('returning')" id="btn-returning">
+            <i class="fas fa-search"></i> Returning Patient
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- NEW PATIENT FORM -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="new-patient-panel">
+        <form id="registration-form" onsubmit="registerPatient(event)">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Personal Information -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="section-header" style="margin: 0; padding: 0; border: none;">
+                                <div class="section-number">1</div>
+                                <div class="section-title">Personal Information</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Photo</label>
+                                    <div class="photo-upload" id="photo-upload" onclick="document.getElementById('photo-input').click()">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Upload</span>
+                                        <img id="photo-preview" style="display: none;">
+                                    </div>
+                                    <input type="file" id="photo-input" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="first-name" placeholder="e.g., Amara" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="last-name" placeholder="e.g., Nwosu" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Date of Birth *</label>
+                                            <input type="date" class="form-control" id="dob" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Gender *</label>
+                                            <select class="form-select" id="gender" required>
+                                                <option value="">Select gender...</option>
+                                                <option value="female">Female</option>
+                                                <option value="male">Male</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Phone Number *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">+233</span>
+                                                <input type="tel" class="form-control" id="phone" placeholder="0244123456" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" placeholder="patient@email.com">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Address</label>
+                                            <textarea class="form-control" id="address" rows="2" placeholder="Residential address..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Information -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="section-header" style="margin: 0; padding: 0; border: none;">
+                                <div class="section-number">2</div>
+                                <div class="section-title">Medical Information</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Blood Group</label>
+                                    <select class="form-select" id="blood-group">
+                                        <option value="">Unknown</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Allergies</label>
+                                    <input type="text" class="form-control" id="allergy-input" placeholder="Type allergy and press Enter..." onkeydown="addAllergy(event)">
+                                    <div class="allergy-tags" id="allergy-tags"></div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Chronic Conditions</label>
+                                    <textarea class="form-control" id="chronic" rows="2" placeholder="e.g., Hypertension, Diabetes, Asthma..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Current Medications</label>
+                                    <textarea class="form-control" id="medications" rows="2" placeholder="List any medications the patient is currently taking..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="section-header" style="margin: 0; padding: 0; border: none;">
+                                <div class="section-number">3</div>
+                                <div class="section-title">Emergency Contact</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Contact Name *</label>
+                                    <input type="text" class="form-control" id="emergency-name" placeholder="Full name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Relationship</label>
+                                    <select class="form-select" id="emergency-rel">
+                                        <option value="">Select...</option>
+                                        <option value="spouse">Spouse</option>
+                                        <option value="parent">Parent</option>
+                                        <option value="child">Child</option>
+                                        <option value="sibling">Sibling</option>
+                                        <option value="friend">Friend</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Contact Phone *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">+233</span>
+                                        <input type="tel" class="form-control" id="emergency-phone" placeholder="0201987654" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Secondary Phone</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">+233</span>
+                                        <input type="tel" class="form-control" id="emergency-phone-2" placeholder="Optional">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="section-header" style="margin: 0; padding: 0; border: none;">
+                                <div class="section-number">4</div>
+                                <div class="section-title">Insurance Information</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Insurance Provider</label>
+                                    <select class="form-select" id="insurance-provider">
+                                        <option value="">None / Self-pay</option>
+                                        <option value="NHIS">NHIS (National Health Insurance)</option>
+                                        <option value="private">Private Insurance</option>
+                                        <option value="corporate">Corporate</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Policy / Card Number</label>
+                                    <input type="text" class="form-control" id="insurance-policy" placeholder="e.g., GH-NHIS-1234-5678">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Expiry Date</label>
+                                    <input type="date" class="form-control" id="insurance-expiry">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Coverage Type</label>
+                                    <select class="form-select" id="insurance-coverage">
+                                        <option value="">Select...</option>
+                                        <option value="full">Full Coverage</option>
+                                        <option value="partial">Partial (Co-pay)</option>
+                                        <option value="emergency">Emergency Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Summary Card -->
+                    <div class="card" style="position: sticky; top: 1.5rem;">
+                        <div class="card-header">
+                            <i class="fas fa-clipboard-check"></i>
+                            Registration Summary
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                                    <span style="color: #94a3b8; font-size: 0.875rem;">Sections Complete</span>
+                                    <span style="font-weight: 700;" id="sections-count">0/4</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                                    <span style="color: #94a3b8; font-size: 0.875rem;">Required Fields</span>
+                                    <span style="font-weight: 700;" id="required-count">0/8 filled</span>
+                                </div>
+                                <div style="padding: 0.75rem; background: #fefce8; border-radius: 0.5rem; border: 1px solid #fde68a;">
+                                    <div style="font-size: 0.8rem; color: #a16207;">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        Patient ID will be auto-generated after registration
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn-primary-custom w-100" id="submit-btn">
+                                    <i class="fas fa-check-circle"></i>
+                                    Register Patient
+                                </button>
+                                <button type="button" class="btn-outline-custom w-100" onclick="clearForm()">
+                                    <i class="fas fa-rotate-left"></i>
+                                    Clear Form
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- RETURNING PATIENT PANEL -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="returning-patient-panel" class="section-hidden">
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-search"></i>
+                        Find Existing Patient
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label class="form-label">Search by Name, Phone, or Patient ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="patient-search" placeholder="e.g., Amara Nwosu, 0244123456, PAT-2026-00001" oninput="searchPatients(this.value)">
+                            </div>
+                        </div>
+
+                        <div id="search-results-container" style="display: none;">
+                            <h6 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; font-weight: 700; margin-bottom: 0.75rem;">
+                                Search Results
+                            </h6>
+                            <div class="search-results" id="search-results-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="text-center py-5" id="search-empty">
+                            <i class="fas fa-users fa-3x mb-3" style="color: #e2e8f0;"></i>
+                            <p style="color: #94a3b8;">Start typing to search for a patient</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Patient Actions -->
+                <div class="card section-hidden" id="selected-patient-card">
+                    <div class="card-header">
+                        <i class="fas fa-user-check"></i>
+                        Selected Patient
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #c084fc, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem;" id="selected-avatar">AN</div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--dark); font-size: 1.1rem;" id="selected-name">Amara Nwosu</div>
+                                <div style="font-size: 0.875rem; color: #94a3b8;" id="selected-meta">PAT-2026-00001 • Female, 36 years</div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn-primary-custom" onclick="createNewVisit()">
+                                <i class="fas fa-hospital-user me-2"></i>Create New Visit
+                            </button>
+                            <button class="btn-outline-custom" onclick="viewPatientHistory()">
+                                <i class="fas fa-clock-rotate-left me-2"></i>View History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SUCCESS MODAL -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="success-modal" id="success-modal">
+    <div class="success-content">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h3 style="font-weight: 800; color: var(--dark); margin-bottom: 0.5rem;">Registration Successful!</h3>
+        <p style="color: #94a3b8;">Patient has been registered in the system.</p>
+
+        <div class="patient-card-preview">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #c084fc, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem;" id="modal-avatar">AN</div>
+                <div>
+                    <div style="font-weight: 700; color: var(--dark); font-size: 1.1rem;" id="modal-name">Amara Nwosu</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;" id="modal-id">PAT-2026-00001</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.875rem;">
+                <div style="padding: 0.75rem; background: white; border-radius: 0.5rem;">
+                    <div style="color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Phone</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="modal-phone">0244123456</div>
+                </div>
+                <div style="padding: 0.75rem; background: white; border-radius: 0.5rem;">
+                    <div style="color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Insurance</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="modal-insurance">NHIS</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button class="btn-primary-custom w-100" onclick="createVisitFromModal()">
+                <i class="fas fa-hospital-user me-2"></i>Create Visit Now
+            </button>
+            <button class="btn-outline-custom w-100" onclick="closeSuccessModal()">
+                Register Another Patient
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:4000' : 'https://mediflow-opd-1-backend.onrender.com';
+let allergies = [];
+let selectedPatient = null;
+
+// ─── Mode Switching ───
+function switchMode(mode) {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-' + mode).classList.add('active');
+
+    if (mode === 'new') {
+        document.getElementById('new-patient-panel').classList.remove('section-hidden');
+        document.getElementById('returning-patient-panel').classList.add('section-hidden');
+    } else {
+        document.getElementById('new-patient-panel').classList.add('section-hidden');
+        document.getElementById('returning-patient-panel').classList.remove('section-hidden');
+    }
+}
+
+// ─── Photo Upload ───
+function previewPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('photo-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('photo-upload').classList.add('has-photo');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// ─── Allergies ───
+function addAllergy(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = e.target;
+        const value = input.value.trim();
+        if (value && !allergies.includes(value)) {
+            allergies.push(value);
+            renderAllergies();
+            input.value = '';
+        }
+    }
+}
+
+function removeAllergy(index) {
+    allergies.splice(index, 1);
+    renderAllergies();
+}
+
+function renderAllergies() {
+    const container = document.getElementById('allergy-tags');
+    container.innerHTML = allergies.map((a, i) => `
+        <span class="allergy-tag" onclick="removeAllergy(${i})">
+            ${a} <i class="fas fa-xmark"></i>
+        </span>
+    `).join('');
+}
+
+// ─── Form Validation ───
+function updateSummary() {
+    const required = ['first-name', 'last-name', 'dob', 'gender', 'phone', 'emergency-name', 'emergency-phone'];
+    let filled = 0;
+    required.forEach(id => {
+        if (document.getElementById(id).value.trim()) filled++;
+    });
+
+    document.getElementById('required-count').textContent = `${filled}/${required.length} filled`;
+
+    // Count sections
+    let sections = 0;
+    if (document.getElementById('first-name').value) sections++;
+    if (document.getElementById('blood-group').value || allergies.length > 0) sections++;
+    if (document.getElementById('emergency-name').value) sections++;
+    if (document.getElementById('insurance-provider').value) sections++;
+
+    document.getElementById('sections-count').textContent = `${sections}/4`;
+}
+
+// Listen for changes
+document.addEventListener('input', updateSummary);
+
+// ─── Register Patient ───
+async function registerPatient(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Registering...';
+
+    const body = {
+        first_name: document.getElementById('first-name').value,
+        last_name: document.getElementById('last-name').value,
+        date_of_birth: document.getElementById('dob').value,
+        gender: document.getElementById('gender').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value,
+        blood_group: document.getElementById('blood-group').value,
+        allergies: allergies.join(', '),
+        chronic_conditions: document.getElementById('chronic').value,
+        current_medications: document.getElementById('medications').value,
+        emergency_name: document.getElementById('emergency-name').value,
+        emergency_rel: document.getElementById('emergency-rel').value,
+        emergency_phone: document.getElementById('emergency-phone').value,
+        emergency_phone_2: document.getElementById('emergency-phone-2').value,
+        insurance_provider: document.getElementById('insurance-provider').value,
+        insurance_policy: document.getElementById('insurance-policy').value,
+        insurance_expiry: document.getElementById('insurance-expiry').value,
+        insurance_coverage: document.getElementById('insurance-coverage').value
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/api/patients`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('mediflow_token') || ''}`
+            },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            showSuccessModal(data);
+        } else {
+            showToast(data.message || 'Registration failed', 'error');
+        }
+    } catch (err) {
+        // Simulate success for demo
+        const mockData = {
+            id: 'pat-' + Date.now(),
+            patient_no: 'PAT-2026-' + String(Math.floor(Math.random() * 90000) + 10000),
+            first_name: body.first_name,
+            last_name: body.last_name,
+            phone: body.phone,
+            insurance_provider: body.insurance_provider || 'None'
+        };
+        showSuccessModal(mockData);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> Register Patient';
+}
+
+function showSuccessModal(data) {
+    const initials = (data.first_name?.[0] || '') + (data.last_name?.[0] || '');
+    document.getElementById('modal-avatar').textContent = initials.toUpperCase();
+    document.getElementById('modal-name').textContent = `${data.first_name} ${data.last_name}`;
+    document.getElementById('modal-id').textContent = data.patient_no || data.id;
+    document.getElementById('modal-phone').textContent = data.phone;
+    document.getElementById('modal-insurance').textContent = data.insurance_provider || 'None';
+
+    document.getElementById('success-modal').classList.add('active');
+}
+
+function closeSuccessModal() {
+    document.getElementById('success-modal').classList.remove('active');
+    clearForm();
+}
+
+function createVisitFromModal() {
+    window.location.href = 'mediflow-dashboard.html';
+}
+
+function clearForm() {
+    document.getElementById('registration-form').reset();
+    allergies = [];
+    renderAllergies();
+    document.getElementById('photo-preview').style.display = 'none';
+    document.getElementById('photo-upload').classList.remove('has-photo');
+    updateSummary();
+}
+
+// ─── Search Patients ───
+const mockPatients = [
+    { id: 'PAT-2026-00001', name: 'Amara Nwosu', phone: '0244123456', gender: 'Female', age: 36, insurance: 'NHIS' },
+    { id: 'PAT-2026-00002', name: 'Kofi Mensah', phone: '0244234567', gender: 'Male', age: 52, insurance: 'NHIS' },
+    { id: 'PAT-2026-00003', name: 'Abena Owusu', phone: '0244345678', gender: 'Female', age: 28, insurance: 'Private' },
+    { id: 'PAT-2026-00004', name: 'Yaw Boateng', phone: '0244456789', gender: 'Male', age: 45, insurance: 'NHIS' },
+    { id: 'PAT-2026-00005', name: 'Efua Asante', phone: '0244567890', gender: 'Female', age: 31, insurance: 'Corporate' },
+];
+
+function searchPatients(query) {
+    const container = document.getElementById('search-results-container');
+    const list = document.getElementById('search-results-list');
+    const empty = document.getElementById('search-empty');
+
+    if (!query.trim()) {
+        container.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+    }
+
+    const results = mockPatients.filter(p =>
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
+        p.phone.includes(query) ||
+        p.id.toLowerCase().includes(query.toLowerCase())
+    );
+
+    if (results.length === 0) {
+        list.innerHTML = '<div style="padding: 2rem; text-align: center; color: #94a3b8;"><i class="fas fa-search fa-2x mb-2"></i><p>No patients found</p></div>';
+    } else {
+        list.innerHTML = results.map(p => {
+            const initials = p.name.split(' ').map(n => n[0]).join('');
+            return `
+                <div class="search-result-item" onclick="selectPatient('${p.id}')">
+                    <div class="search-avatar">${initials}</div>
+                    <div class="search-info">
+                        <div class="search-name">${p.name}</div>
+                        <div class="search-meta">${p.id} • ${p.gender}, ${p.age}y • ${p.phone}</div>
+                    </div>
+                    <button class="search-action">Select</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    container.style.display = 'block';
+    empty.style.display = 'none';
+}
+
+function selectPatient(id) {
+    selectedPatient = mockPatients.find(p => p.id === id);
+    if (!selectedPatient) return;
+
+    const initials = selectedPatient.name.split(' ').map(n => n[0]).join('');
+    document.getElementById('selected-avatar').textContent = initials;
+    document.getElementById('selected-name').textContent = selectedPatient.name;
+    document.getElementById('selected-meta').textContent = `${selectedPatient.id} • ${selectedPatient.gender}, ${selectedPatient.age}y`;
+
+    document.getElementById('selected-patient-card').classList.remove('section-hidden');
+}
+
+function createNewVisit() {
+    if (!selectedPatient) return;
+    showToast(`Creating new visit for ${selectedPatient.name}...`, 'info');
+    setTimeout(() => {
+        window.location.href = 'mediflow-dashboard.html';
+    }, 1000);
+}
+
+function viewPatientHistory() {
+    showToast(`Viewing history for ${selectedPatient?.name}`, 'info');
+}
+
+// ─── Toast ───
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'mediflow-toast';
+    const icons = { success: 'fa-circle-check text-success', error: 'fa-circle-xmark text-danger', info: 'fa-circle-info text-primary' };
+    toast.innerHTML = `<i class="fas ${icons[type]}"></i><div style="font-weight: 600;">${message}</div>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
+function logout() {
+    localStorage.clear();
+}
+</script>
+
+</body>
+</html>

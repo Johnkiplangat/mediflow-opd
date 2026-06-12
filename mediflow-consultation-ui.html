@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow OPD — Consultation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
+            color: white;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .sidebar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+        .sidebar-brand i { color: var(--primary); }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* ─── Main Content ─── */
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem 2rem;
+        }
+
+        /* ─── Top Bar ─── */
+        .top-bar {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .patient-badge {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .patient-avatar {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .visit-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .visit-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ─── Tab Navigation ─── */
+        .consult-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .consult-tab {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .consult-tab:hover { background: #f8fafc; }
+        .consult-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .consult-tab .badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+        }
+
+        /* ─── Cards ─── */
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+        .card-header i { color: var(--primary); }
+        .card-body { padding: 1.5rem; }
+
+        /* ─── Form Styles ─── */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 1.5px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        textarea.form-control { min-height: 100px; resize: vertical; }
+
+        /* ─── AI Suggestion Box ─── */
+        .ai-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid #bfdbfe;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .ai-box-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.75rem;
+        }
+        .ai-box-header i { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .ai-diagnosis-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.625rem 0.875rem;
+            background: white;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .ai-diagnosis-name { font-weight: 600; color: #1e293b; }
+        .ai-confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .confidence-bar {
+            width: 80px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* ─── Dental Chart ─── */
+        .dental-chart-container {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+        }
+        .tooth-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tooth {
+            aspect-ratio: 1;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            font-weight: 700;
+            position: relative;
+        }
+        .tooth:hover { border-color: var(--primary); transform: scale(1.05); }
+        .tooth.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+        }
+        .tooth.has-issue {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+        .tooth.has-issue::after {
+            content: '';
+            position: absolute;
+            top: 4px; right: 4px;
+            width: 8px; height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+        .tooth-number { font-size: 0.65rem; color: #94a3b8; }
+        .tooth-label { font-size: 0.7rem; }
+
+        .tooth-condition-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .condition-btn {
+            padding: 0.625rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .condition-btn:hover { border-color: var(--primary); }
+        .condition-btn.active {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ─── Vitals Display ─── */
+        .vitals-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .vital-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .vital-icon {
+            width: 40px; height: 40px;
+            border-radius: 0.625rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.1rem;
+        }
+        .vital-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .vital-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .vital-alert { color: var(--danger) !important; }
+        .vital-alert .vital-icon { background: #fef2f2 !important; color: var(--danger) !important; }
+
+        /* ─── Action Buttons ─── */
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+        }
+        .btn-success-custom {
+            background: var(--success);
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            color: white;
+        }
+        .btn-outline-custom {
+            border: 2px solid var(--border);
+            border-radius: 0.625rem;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            color: #64748b;
+            background: white;
+        }
+        .btn-outline-custom:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ─── Timeline ─── */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 0.25rem;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        .timeline-item.completed::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+        .timeline-item.pending::before { background: #cbd5e1; box-shadow: 0 0 0 2px #cbd5e1; }
+        .timeline-title { font-weight: 700; color: var(--dark); }
+        .timeline-time { font-size: 0.75rem; color: #94a3b8; }
+        .timeline-desc { font-size: 0.875rem; color: #64748b; margin-top: 0.25rem; }
+
+        /* ─── Prescription Builder ─── */
+        .rx-item {
+            background: #f8fafc;
+            border-radius: 0.625rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+        }
+        .rx-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .rx-drug-name {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .rx-remove {
+            color: var(--danger);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* ─── Toast Notifications ─── */
+        .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999; }
+        .mediflow-toast {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            min-width: 320px;
+            animation: slideIn 0.3s ease;
+            margin-bottom: 0.75rem;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-icon { font-size: 1.25rem; }
+        .toast-success .toast-icon { color: var(--success); }
+        .toast-error .toast-icon { color: var(--danger); }
+        .toast-info .toast-icon { color: var(--info); }
+
+        /* ─── Loading States ─── */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 0.5rem;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 991px) {
+            .sidebar { width: 70px; padding: 1rem 0.5rem; }
+            .sidebar-brand span, .nav-item span { display: none; }
+            .main-content { margin-left: 70px; padding: 1rem; }
+            .tooth-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* ─── Hidden sections ─── */
+        .section-hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+    <a href="#" class="sidebar-brand">
+        <i class="fas fa-heart-pulse"></i>
+        <span>MediFlow</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-gauge-high"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-users"></i>
+        <span>Patients</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-hospital-user"></i>
+        <span>Visits</span>
+    </a>
+    <a href="#" class="nav-item active">
+        <i class="fas fa-stethoscope"></i>
+        <span>Consultations</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-flask"></i>
+        <span>Laboratory</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-pills"></i>
+        <span>Pharmacy</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Billing</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-chart-line"></i>
+        <span>Analytics</span>
+    </a>
+    <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <a href="#" class="nav-item">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="patient-badge">
+            <div class="patient-avatar">AN</div>
+            <div>
+                <div style="font-weight: 700; color: var(--dark);">Amara Nwosu</div>
+                <div style="font-size: 0.875rem; color: #94a3b8;">PAT-2026-00001 • Female • 36 years</div>
+            </div>
+        </div>
+        <div class="visit-meta">
+            <span><i class="fas fa-hashtag text-primary"></i> V-2026-00001</span>
+            <span><i class="fas fa-clock text-warning"></i> Queue #12</span>
+            <span><i class="fas fa-circle text-success" style="font-size: 0.5rem;"></i> In Progress</span>
+            <span><i class="fas fa-shield-halved text-info"></i> NHIS</span>
+        </div>
+    </div>
+
+    <!-- Consultation Tabs -->
+    <div class="consult-tabs">
+        <button class="consult-tab active" onclick="switchTab('medical')">
+            <i class="fas fa-stethoscope"></i>
+            Medical Consultation
+            <span class="badge bg-success" id="medical-badge">Active</span>
+        </button>
+        <button class="consult-tab" onclick="switchTab('dental')">
+            <i class="fas fa-tooth"></i>
+            Dental Consultation
+            <span class="badge bg-secondary" id="dental-badge">Not Started</span>
+        </button>
+        <button class="consult-tab" onclick="switchTab('timeline')">
+            <i class="fas fa-list-check"></i>
+            Visit Timeline
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- MEDICAL CONSULTATION PANEL -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="medical-panel" class="consultation-panel">
+
+        <!-- Triage Vitals Summary -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-heart-pulse"></i>
+                Triage Vitals
+                <span class="ms-auto badge bg-light text-dark" style="font-size: 0.75rem;">
+                    <i class="fas fa-clock me-1"></i>Recorded 10:23 AM
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="vitals-row">
+                    <div class="vital-card vital-alert">
+                        <div class="vital-icon" style="background: #fef2f2; color: var(--danger);">
+                            <i class="fas fa-temperature-high"></i>
+                        </div>
+                        <div class="vital-value" style="color: var(--danger);">38.9°C</div>
+                        <div class="vital-label">Temperature</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-icon" style="background: #eff6ff; color: var(--primary);">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="vital-value">104</div>
+                        <div class="vital-label">Heart Rate (bpm)</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-icon" style="background: #f0fdf4; color: var(--success);">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                        <div class="vital-value">98%</div>
+                        <div class="vital-label">SpO₂</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-icon" style="background: #fffbeb; color: var(--warning);">
+                            <i class="fas fa-gauge"></i>
+                        </div>
+                        <div class="vital-value">110/70</div>
+                        <div class="vital-label">Blood Pressure</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-icon" style="background: #f5f3ff; color: #7c3aed;">
+                            <i class="fas fa-weight-scale"></i>
+                        </div>
+                        <div class="vital-value">58 <small style="font-size:0.7rem; color:#94a3b8;">kg</small></div>
+                        <div class="vital-label">Weight</div>
+                    </div>
+                    <div class="vital-card vital-alert">
+                        <div class="vital-icon" style="background: #fef2f2; color: var(--danger);">
+                            <i class="fas fa-face-grimace"></i>
+                        </div>
+                        <div class="vital-value" style="color: var(--danger);">5/10</div>
+                        <div class="vital-label">Pain Score</div>
+                    </div>
+                </div>
+                <div class="alert alert-warning d-flex align-items-center" style="border-radius: 0.625rem; margin-bottom: 0;">
+                    <i class="fas fa-triangle-exclamation me-2"></i>
+                    <div><strong>Chief Complaint:</strong> Fever, chills, body aches for 3 days. <strong>Allergies:</strong> Penicillin. <strong>Chronic:</strong> Hypertension.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Diagnosis Suggestions -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-robot"></i>
+                AI-Assisted Diagnosis
+                <button class="btn btn-sm btn-outline-primary ms-auto" onclick="getAISuggestions()">
+                    <i class="fas fa-wand-magic-sparkles me-1"></i>Get Suggestions
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="ai-suggestions-container">
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-robot fa-3x mb-3" style="color: #cbd5e1;"></i>
+                        <p>Click "Get Suggestions" to receive AI-powered differential diagnosis based on symptoms and vitals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultation Form -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clipboard-medical"></i>
+                Medical Consultation Notes
+            </div>
+            <div class="card-body">
+                <form id="medical-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">History of Present Illness</label>
+                            <textarea class="form-control" id="medical-hpi" placeholder="Detailed history..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Examination Findings</label>
+                            <textarea class="form-control" id="medical-exam" placeholder="Physical examination findings..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Diagnosis</label>
+                            <input type="text" class="form-control" id="medical-diagnosis" placeholder="Primary diagnosis">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">ICD-10 Code</label>
+                            <input type="text" class="form-control" id="medical-icd10" placeholder="e.g., B50.9">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Doctor</label>
+                            <select class="form-select" id="medical-doctor">
+                                <option value="">Select doctor...</option>
+                                <option value="doc-1">Dr. Kwame Asante (General Medicine)</option>
+                                <option value="doc-2">Dr. Ama Boateng (Internal Medicine)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="medical-notes" rows="2" placeholder="Management plan, referrals, etc."></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="medical-followup">
+                                <label class="form-check-label" for="medical-followup">Follow-up Required</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Follow-up Date</label>
+                            <input type="date" class="form-control" id="medical-followup-date">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i>
+                Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-custom w-100" onclick="orderLabTests()">
+                            <i class="fas fa-flask me-2"></i>Order Lab Tests
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-custom w-100" onclick="createPrescription()">
+                            <i class="fas fa-prescription me-2"></i>Create Prescription
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-custom w-100" onclick="referPatient()">
+                            <i class="fas fa-share-from-square me-2"></i>Refer Patient
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="d-flex justify-content-between align-items-center" style="margin-top: 2rem; padding-bottom: 2rem;">
+            <button class="btn btn-outline-custom" onclick="saveDraft()">
+                <i class="fas fa-floppy-disk me-2"></i>Save Draft
+            </button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-custom" onclick="cancelConsultation()">Cancel</button>
+                <button class="btn btn-primary-custom" onclick="completeMedicalConsultation()">
+                    <i class="fas fa-check-circle me-2"></i>Complete Consultation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- DENTAL CONSULTATION PANEL -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="dental-panel" class="consultation-panel section-hidden">
+
+        <!-- Dental Chart -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-tooth"></i>
+                Dental Chart
+                <span class="ms-auto text-muted" style="font-size: 0.875rem;">
+                    <i class="fas fa-hand-pointer me-1"></i>Click a tooth to select
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 style="font-weight: 700; margin: 0;"><i class="fas fa-teeth text-primary me-2"></i>Interactive Dental Chart</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="saveChartSnapshot()" title="Save current chart state">
+                            <i class="fas fa-camera me-1"></i>Snapshot
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="resetChart()" title="Clear all markings">
+                            <i class="fas fa-eraser me-1"></i>Clear
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="restartNewChart()" title="Start a completely new chart">
+                            <i class="fas fa-rotate-right me-1"></i>New Chart
+                        </button>
+                    </div>
+                </div>
+                <div class="dental-chart-container">
+                    <!-- Upper Right (1-8) -->
+                    <div class="mb-2 text-center" style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">UPPER RIGHT</div>
+                    <div class="tooth-grid" id="upper-right">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <!-- Upper Left (9-16) -->
+                    <div class="mb-2 text-center" style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">UPPER LEFT</div>
+                    <div class="tooth-grid" id="upper-left">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border-style: dashed;">
+
+                    <!-- Lower Left (17-24) -->
+                    <div class="mb-2 text-center" style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">LOWER LEFT</div>
+                    <div class="tooth-grid" id="lower-left">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <!-- Lower Right (25-32) -->
+                    <div class="mb-2 text-center" style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">LOWER RIGHT</div>
+                    <div class="tooth-grid" id="lower-right">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Selected Tooth Details -->
+                <div id="tooth-detail-panel" class="mt-4" style="display: none;">
+                    <h6 style="font-weight: 700; margin-bottom: 1rem;">
+                        <i class="fas fa-tooth text-primary me-2"></i>
+                        Tooth #<span id="selected-tooth-number">--</span> Details
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Condition</label>
+                            <div class="tooth-condition-select" id="tooth-conditions">
+                                <button type="button" class="condition-btn" data-condition="healthy">Healthy</button>
+                                <button type="button" class="condition-btn" data-condition="caries">Caries</button>
+                                <button type="button" class="condition-btn" data-condition="filled">Filled</button>
+                                <button type="button" class="condition-btn" data-condition="missing">Missing</button>
+                                <button type="button" class="condition-btn" data-condition="crown">Crown</button>
+                                <button type="button" class="condition-btn" data-condition="root-canal">Root Canal</button>
+                                <button type="button" class="condition-btn" data-condition="fractured">Fractured</button>
+                                <button type="button" class="condition-btn" data-condition="abscess">Abscess</button>
+                                <button type="button" class="condition-btn" data-condition="periodontal">Periodontal</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Treatment Plan</label>
+                            <textarea class="form-control" id="tooth-treatment" rows="3" placeholder="Describe planned treatment..."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-primary" onclick="saveToothDetail()">
+                            <i class="fas fa-check me-1"></i>Save Tooth Detail
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" onclick="clearToothSelection()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dental Consultation Form -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clipboard-medical"></i>
+                Dental Consultation Notes
+            </div>
+            <div class="card-body">
+                <form id="dental-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Chief Complaint</label>
+                            <input type="text" class="form-control" id="dental-complaint" placeholder="e.g., Toothache lower left">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dentist</label>
+                            <select class="form-select" id="dental-doctor">
+                                <option value="">Select dentist...</option>
+                                <option value="dent-1">Dr. Yaw Mensah (Oral Surgery)</option>
+                                <option value="dent-2">Dr. Efua Owusu (Periodontics)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Examination Findings</label>
+                            <textarea class="form-control" id="dental-exam" rows="3" placeholder="Intraoral and extraoral findings..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Diagnosis</label>
+                            <textarea class="form-control" id="dental-diagnosis" rows="3" placeholder="Dental diagnosis..."></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">ICD-10 Code</label>
+                            <input type="text" class="form-control" id="dental-icd10" placeholder="e.g., K04.5">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Procedure</label>
+                            <input type="text" class="form-control" id="dental-procedure" placeholder="e.g., Root Canal Therapy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Upload X-ray / Images</label>
+                            <input type="file" class="form-control" id="dental-images" multiple accept="image/*">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="dental-notes" rows="2" placeholder="Post-op instructions, referrals..."></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="dental-followup">
+                                <label class="form-check-label" for="dental-followup">Follow-up Required</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Follow-up Date</label>
+                            <input type="date" class="form-control" id="dental-followup-date">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dental Prescription -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-prescription"></i>
+                Dental Prescription
+                <button class="btn btn-sm btn-outline-primary ms-auto" onclick="addDentalRxItem()">
+                    <i class="fas fa-plus me-1"></i>Add Drug
+                </button>
+            </div>
+            <div class="card-body" id="dental-rx-container">
+                <div class="text-center py-4 text-muted" id="dental-rx-empty">
+                    <i class="fas fa-prescription-bottle-medical fa-2x mb-2" style="color: #cbd5e1;"></i>
+                    <p>No drugs prescribed yet. Click "Add Drug" to prescribe.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="d-flex justify-content-between align-items-center" style="margin-top: 2rem; padding-bottom: 2rem;">
+            <button class="btn btn-outline-custom" onclick="saveDentalDraft()">
+                <i class="fas fa-floppy-disk me-2"></i>Save Draft
+            </button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-custom" onclick="cancelDentalConsultation()">Cancel</button>
+                <button class="btn btn-primary-custom" onclick="completeDentalConsultation()">
+                    <i class="fas fa-check-circle me-2"></i>Complete Dental Consultation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- VISIT TIMELINE PANEL -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="timeline-panel" class="consultation-panel section-hidden">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clock-rotate-left"></i>
+                Visit Timeline
+            </div>
+            <div class="card-body">
+                <div class="timeline" id="visit-timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-title">Patient Registered</div>
+                        <div class="timeline-time">10:15 AM</div>
+                        <div class="timeline-desc">Amara Nwosu registered. Patient No: PAT-2026-00001</div>
+                    </div>
+                    <div class="timeline-item completed">
+                        <div class="timeline-title">Visit Created</div>
+                        <div class="timeline-time">10:18 AM</div>
+                        <div class="timeline-desc">Visit V-2026-00001 created. Queue #12.</div>
+                    </div>
+                    <div class="timeline-item completed">
+                        <div class="timeline-title">Triage Vitals Recorded</div>
+                        <div class="timeline-time">10:23 AM</div>
+                        <div class="timeline-desc">Temp 38.9°C (elevated), HR 104, BP 110/70, Pain 5/10</div>
+                    </div>
+                    <div class="timeline-item completed">
+                        <div class="timeline-title">Consultation Fee Billed</div>
+                        <div class="timeline-time">10:25 AM</div>
+                        <div class="timeline-desc">Invoice INV-2026-00045 created. Amount: GHS 35.00</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="timeline-title">Medical Consultation</div>
+                        <div class="timeline-time">In Progress</div>
+                        <div class="timeline-desc">Dr. Kwame Asante attending. Chief complaint: Fever, chills, body aches.</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="timeline-title">Dental Consultation</div>
+                        <div class="timeline-time">Not Started</div>
+                        <div class="timeline-desc">Awaiting medical consultation completion.</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="timeline-title">Final Billing & Payment</div>
+                        <div class="timeline-time">Pending</div>
+                        <div class="timeline-desc">Invoice will be auto-populated with all services.</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="timeline-title">Visit Complete</div>
+                        <div class="timeline-time">Pending</div>
+                        <div class="timeline-desc">Discharge instructions and receipt will be sent.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TOAST CONTAINER -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// CONFIG
+// ────────────────────────────────────────────────────────────────────────────
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:4000' : 'https://mediflow-opd-1-backend.onrender.com';
+const TOKEN = localStorage.getItem('mediflow_token') || '';
+
+// ────────────────────────────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────────────────────────────
+let currentTab = 'medical';
+let selectedTooth = null;
+let dentalChart = {};
+let dentalRxItems = [];
+
+// ────────────────────────────────────────────────────────────────────────────
+// TAB SWITCHING
+// ────────────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.consult-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.consultation-panel').forEach(p => p.classList.add('section-hidden'));
+
+    event.currentTarget.classList.add('active');
+    document.getElementById(tab + '-panel').classList.remove('section-hidden');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// TOAST NOTIFICATIONS
+// ────────────────────────────────────────────────────────────────────────────
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `mediflow-toast toast-${type}`;
+
+    const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+    toast.innerHTML = `
+        <i class="fas ${icons[type]} toast-icon"></i>
+        <div style="font-weight: 600; color: #1e293b;">${message}</div>
+    `;
+
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DENTAL CHART
+// ────────────────────────────────────────────────────────────────────────────
+function initDentalChart() {
+    const quadrants = [
+        { id: 'upper-right', teeth: [18,17,16,15,14,13,12,11] },
+        { id: 'upper-left', teeth: [21,22,23,24,25,26,27,28] },
+        { id: 'lower-left', teeth: [38,37,36,35,34,33,32,31] },
+        { id: 'lower-right', teeth: [41,42,43,44,45,46,47,48] }
+    ];
+
+    quadrants.forEach(q => {
+        const grid = document.getElementById(q.id);
+        q.teeth.forEach(num => {
+            const tooth = document.createElement('div');
+            tooth.className = 'tooth';
+            tooth.dataset.number = num;
+            tooth.innerHTML = `
+                <span class="tooth-number">${num}</span>
+            `;
+            tooth.onclick = () => selectTooth(num, tooth);
+            grid.appendChild(tooth);
+        });
+    });
+}
+
+function selectTooth(number, element) {
+    document.querySelectorAll('.tooth').forEach(t => t.classList.remove('selected'));
+    element.classList.add('selected');
+    selectedTooth = number;
+
+    document.getElementById('selected-tooth-number').textContent = number;
+    document.getElementById('tooth-detail-panel').style.display = 'block';
+
+    // Pre-fill if exists
+    if (dentalChart[number]) {
+        document.querySelectorAll('.condition-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.condition === dentalChart[number].condition);
+        });
+        document.getElementById('tooth-treatment').value = dentalChart[number].treatment || '';
+    } else {
+        document.querySelectorAll('.condition-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tooth-treatment').value = '';
+    }
+}
+
+// Condition button selection
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('condition-btn')) {
+        document.querySelectorAll('.condition-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+    }
+});
+
+function saveToothDetail() {
+    if (!selectedTooth) return;
+
+    const condition = document.querySelector('.condition-btn.active')?.dataset.condition || 'healthy';
+    const treatment = document.getElementById('tooth-treatment').value;
+
+    dentalChart[selectedTooth] = { condition, treatment };
+
+    // Update visual
+    const toothEl = document.querySelector(`.tooth[data-number="${selectedTooth}"]`);
+    if (condition !== 'healthy') {
+        toothEl.classList.add('has-issue');
+    } else {
+        toothEl.classList.remove('has-issue');
+    }
+
+    showToast(`Tooth #${selectedTooth} updated: ${condition}`, 'success');
+    clearToothSelection();
+}
+
+function clearToothSelection() {
+    selectedTooth = null;
+    document.querySelectorAll('.tooth').forEach(t => t.classList.remove('selected'));
+    document.getElementById('tooth-detail-panel').style.display = 'none';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// AI SUGGESTIONS
+// ────────────────────────────────────────────────────────────────────────────
+function getAISuggestions() {
+    const container = document.getElementById('ai-suggestions-container');
+    container.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Analyzing symptoms and vitals...</p>
+        </div>
+    `;
+
+    // Simulate API call
+    setTimeout(() => {
+        container.innerHTML = `
+            <div class="ai-box">
+                <div class="ai-box-header">
+                    <i class="fas fa-robot"></i>
+                    AI Differential Diagnosis
+                </div>
+                <div class="mb-3">
+                    <div class="ai-diagnosis-item">
+                        <span class="ai-diagnosis-name">Uncomplicated Malaria</span>
+                        <span class="ai-confidence">
+                            <span class="confidence-bar"><span class="confidence-fill" style="width: 85%; background: var(--success);"></span></span>
+                            85%
+                        </span>
+                    </div>
+                    <div class="ai-diagnosis-item">
+                        <span class="ai-diagnosis-name">Typhoid Fever</span>
+                        <span class="ai-confidence">
+                            <span class="confidence-bar"><span class="confidence-fill" style="width: 60%; background: var(--warning);"></span></span>
+                            60%
+                        </span>
+                    </div>
+                    <div class="ai-diagnosis-item">
+                        <span class="ai-diagnosis-name">Viral Hepatitis</span>
+                        <span class="ai-confidence">
+                            <span class="confidence-bar"><span class="confidence-fill" style="width: 35%; background: var(--danger);"></span></span>
+                            35%
+                        </span>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="p-2 bg-white rounded" style="border: 1px solid #e2e8f0;">
+                            <small style="color: #94a3b8; font-weight: 600;">RECOMMENDED TESTS</small>
+                            <ul class="mb-0 mt-1" style="font-size: 0.875rem; padding-left: 1.2rem;">
+                                <li>Malaria RDT</li>
+                                <li>Full Blood Count</li>
+                                <li>Widal Test</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2 bg-white rounded" style="border: 1px solid #e2e8f0;">
+                            <small style="color: #94a3b8; font-weight: 600;">RED FLAGS</small>
+                            <ul class="mb-0 mt-1" style="font-size: 0.875rem; padding-left: 1.2rem; color: var(--danger);">
+                                <li>Jaundice</li>
+                                <li>Altered consciousness</li>
+                                <li>Severe anemia</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded" style="border: 1px solid #e2e8f0;">
+                    <small style="color: #94a3b8; font-weight: 600;">RECOMMENDED TREATMENT</small>
+                    <p class="mb-0 mt-1" style="font-size: 0.875rem;">
+                        <strong>Artemether-Lumefantrine</strong> 80/480mg — Twice daily for 3 days<br>
+                        Follow-up in 3 days or immediately if condition worsens.
+                    </p>
+                </div>
+                <div class="mt-3 text-end">
+                    <button class="btn btn-sm btn-primary" onclick="applyAIDiagnosis()">
+                        <i class="fas fa-check me-1"></i>Apply Primary Diagnosis
+                    </button>
+                </div>
+            </div>
+        `;
+    }, 1500);
+}
+
+function applyAIDiagnosis() {
+    document.getElementById('medical-diagnosis').value = 'Uncomplicated Plasmodium falciparum malaria';
+    document.getElementById('medical-icd10').value = 'B50.9';
+    document.getElementById('medical-notes').value = 'Start ACT immediately. Review in 3 days. Monitor for red flags: jaundice, altered consciousness, severe anemia.';
+    showToast('AI diagnosis applied to form', 'success');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DENTAL PRESCRIPTION
+// ────────────────────────────────────────────────────────────────────────────
+function addDentalRxItem() {
+    const container = document.getElementById('dental-rx-container');
+    const emptyMsg = document.getElementById('dental-rx-empty');
+    if (emptyMsg) emptyMsg.remove();
+
+    const id = Date.now();
+    const item = document.createElement('div');
+    item.className = 'rx-item';
+    item.id = `rx-${id}`;
+    item.innerHTML = `
+        <div class="rx-header">
+            <span class="rx-drug-name">Drug #${dentalRxItems.length + 1}</span>
+            <span class="rx-remove" onclick="removeDentalRxItem('${id}')"><i class="fas fa-trash"></i></span>
+        </div>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <select class="form-select form-select-sm" id="rx-drug-${id}">
+                    <option>Select drug...</option>
+                    <option>Ibuprofen 400mg</option>
+                    <option>Amoxicillin 500mg</option>
+                    <option>Paracetamol 500mg</option>
+                    <option>Metronidazole 400mg</option>
+                    <option>Chlorhexidine Mouthwash</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm" placeholder="Dosage" id="rx-dose-${id}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control form-control-sm" placeholder="Frequency" id="rx-freq-${id}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control form-control-sm" placeholder="Duration" id="rx-dur-${id}">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control form-control-sm" placeholder="Qty" id="rx-qty-${id}">
+            </div>
+            <div class="col-12">
+                <input type="text" class="form-control form-control-sm" placeholder="Notes (e.g., Take with food)" id="rx-notes-${id}">
+            </div>
+        </div>
+    `;
+    container.appendChild(item);
+    dentalRxItems.push(id);
+}
+
+function removeDentalRxItem(id) {
+    document.getElementById(`rx-${id}`).remove();
+    dentalRxItems = dentalRxItems.filter(i => i !== id);
+    if (dentalRxItems.length === 0) {
+        document.getElementById('dental-rx-container').innerHTML = `
+            <div class="text-center py-4 text-muted" id="dental-rx-empty">
+                <i class="fas fa-prescription-bottle-medical fa-2x mb-2" style="color: #cbd5e1;"></i>
+                <p>No drugs prescribed yet. Click "Add Drug" to prescribe.</p>
+            </div>
+        `;
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// API CALLS
+// ────────────────────────────────────────────────────────────────────────────
+async function apiCall(method, endpoint, body = null) {
+    const url = `${API_BASE}${endpoint}`;
+    const options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${TOKEN}`
+        }
+    };
+    if (body) options.body = JSON.stringify(body);
+
+    try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        return { ok: res.ok, status: res.status, data };
+    } catch (err) {
+        return { ok: false, error: err.message };
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// MEDICAL CONSULTATION ACTIONS
+// ────────────────────────────────────────────────────────────────────────────
+async function completeMedicalConsultation() {
+    const body = {
+        visit_id: 'VISIT_ID_HERE',
+        consultation_type: 'medical',
+        doctor_id: document.getElementById('medical-doctor').value,
+        chief_complaint: 'Fever, chills, body aches for 3 days',
+        history_of_present_illness: document.getElementById('medical-hpi').value,
+        examination_findings: document.getElementById('medical-exam').value,
+        diagnosis: document.getElementById('medical-diagnosis').value,
+        diagnosis_icd10: document.getElementById('medical-icd10').value,
+        notes: document.getElementById('medical-notes').value,
+        follow_up_required: document.getElementById('medical-followup').checked,
+        follow_up_date: document.getElementById('medical-followup-date').value,
+        use_ai: true
+    };
+
+    showToast('Saving medical consultation...', 'info');
+    const res = await apiCall('POST', '/api/consultations', body);
+
+    if (res.ok) {
+        showToast('Medical consultation completed successfully!', 'success');
+        document.getElementById('medical-badge').className = 'badge bg-success';
+        document.getElementById('medical-badge').textContent = 'Completed';
+        updateTimeline();
+    } else {
+        showToast(`Error: ${res.data?.message || res.error || 'Failed to save'}`, 'error');
+    }
+}
+
+function saveDraft() {
+    showToast('Draft saved locally', 'success');
+}
+
+function cancelConsultation() {
+    if (confirm('Cancel this consultation? All unsaved data will be lost.')) {
+        showToast('Consultation cancelled', 'info');
+    }
+}
+
+function orderLabTests() {
+    showToast('Redirecting to Laboratory module...', 'info');
+    // window.location.href = '/lab?visit_id=...';
+}
+
+function createPrescription() {
+    showToast('Redirecting to Pharmacy module...', 'info');
+    // window.location.href = '/pharmacy?visit_id=...';
+}
+
+function referPatient() {
+    showToast('Referral form opened', 'info');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// DENTAL CONSULTATION ACTIONS
+// ────────────────────────────────────────────────────────────────────────────
+async function completeDentalConsultation() {
+    const dentalChartArray = Object.entries(dentalChart).map(([number, data]) => ({
+        tooth_number: parseInt(number),
+        ...data
+    }));
+
+    const body = {
+        visit_id: 'VISIT_ID_HERE',
+        consultation_type: 'dental',
+        doctor_id: document.getElementById('dental-doctor').value,
+        chief_complaint: document.getElementById('dental-complaint').value,
+        examination_findings: document.getElementById('dental-exam').value,
+        diagnosis: document.getElementById('dental-diagnosis').value,
+        diagnosis_icd10: document.getElementById('dental-icd10').value,
+        dental_chart: dentalChartArray[0] || null,
+        dental_procedure: document.getElementById('dental-procedure').value,
+        notes: document.getElementById('dental-notes').value,
+        follow_up_required: document.getElementById('dental-followup').checked,
+        follow_up_date: document.getElementById('dental-followup-date').value
+    };
+
+    showToast('Saving dental consultation...', 'info');
+    const res = await apiCall('POST', '/api/consultations', body);
+
+    if (res.ok) {
+        showToast('Dental consultation completed successfully!', 'success');
+        document.getElementById('dental-badge').className = 'badge bg-success';
+        document.getElementById('dental-badge').textContent = 'Completed';
+        updateTimeline();
+    } else {
+        showToast(`Error: ${res.data?.message || res.error || 'Failed to save'}`, 'error');
+    }
+}
+
+function saveDentalDraft() {
+    showToast('Dental draft saved locally', 'success');
+}
+
+function cancelDentalConsultation() {
+    if (confirm('Cancel this dental consultation?')) {
+        showToast('Dental consultation cancelled', 'info');
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// TIMELINE
+// ────────────────────────────────────────────────────────────────────────────
+function updateTimeline() {
+    // Refresh timeline from API
+    showToast('Timeline updated', 'info');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    initDentalChart();
+});
+</script>
+
+</body>
+</html>
