@@ -8,129 +8,93 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* { font-family: 'Inter', sans-serif; }
-.sidebar { background: #1e293b; }
-.sidebar-item:hover { background: rgba(255,255,255,0.08); }
-.sidebar-item.active { background: rgba(59,130,246,0.15); border-right: 3px solid #3b82f6; color: #3b82f6; }
-.card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-.role-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; border: 1px solid; }
-.role-super_admin { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
-.role-admin { background: #fff7ed; color: #ea580c; border-color: #fed7aa; }
-.role-doctor { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
-.role-nurse { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
-.role-pharmacist { background: #faf5ff; color: #9333ea; border-color: #e9d5ff; }
-.role-lab_technician { background: #ecfeff; color: #0891b2; border-color: #a5f3fc; }
-.role-receptionist { background: #fefce8; color: #ca8a04; border-color: #fde047; }
-.role-billing_staff { background: #fdf2f8; color: #db2777; border-color: #fbcfe8; }
-.role-inventory_manager { background: #f7fee7; color: #65a30d; border-color: #d9f99d; }
-.role-viewer { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
-.tab-btn { padding: 10px 20px; font-size: 14px; font-weight: 500; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
-.tab-btn:hover { color: #334155; }
-.tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-.form-input { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; background: #fff; }
-.form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-.form-label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
-.btn-primary { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
-.btn-primary:hover { background: #2563eb; }
-.btn-secondary { background: #f1f5f9; color: #475569; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
-.btn-secondary:hover { background: #e2e8f0; }
-.btn-danger { background: #fef2f2; color: #dc2626; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; border: 1px solid #fecaca; cursor: pointer; transition: all 0.2s; }
-.btn-danger:hover { background: #fee2e2; }
-.btn-sm { padding: 6px 12px; font-size: 13px; }
-.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-input:checked + .slider { background-color: #3b82f6; }
-input:checked + .slider:before { transform: translateX(20px); }
-.table-row:hover { background: #f8fafc; }
-.dropdown-menu { position: absolute; right: 0; top: 100%; margin-top: 4px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); min-width: 160px; z-index: 50; display: none; }
-.dropdown-menu.show { display: block; }
-.dropdown-item { padding: 8px 12px; font-size: 13px; color: #374151; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.dropdown-item:hover { background: #f1f5f9; }
-.dropdown-item.danger { color: #dc2626; }
-.dropdown-item.danger:hover { background: #fef2f2; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; visibility: hidden; transition: all 0.2s; }
-.modal-overlay.show { opacity: 1; visibility: visible; }
-.modal-content { background: white; border-radius: 12px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: all 0.2s; }
-.modal-overlay.show .modal-content { transform: scale(1); }
-.toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); z-index: 200; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
-.toast.show { transform: translateY(0); opacity: 1; }
-.search-input { padding: 8px 12px 8px 36px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 240px; background: white; }
-.filter-select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: white; cursor: pointer; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.status-active { background: #22c55e; }
-.status-inactive { background: #ef4444; }
-.section-title { font-size: 18px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 10px; }
-.section-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.hidden { display: none !important; }
-.logo-upload { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; }
-.logo-upload:hover { border-color: #3b82f6; background: #f8fafc; }
-.logo-upload.has-image { border-style: solid; border-color: #3b82f6; background: #eff6ff; }
-.logo-preview { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin: 0 auto 8px; }
-.currency-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; background: white; cursor: pointer; transition: all 0.2s; }
-.currency-row:hover { border-color: #3b82f6; }
-.currency-row.active { border-color: #3b82f6; background: #eff6ff; }
-.currency-row .currency-info { display: flex; align-items: center; gap: 12px; }
-.currency-row .currency-code { font-weight: 700; font-size: 15px; color: #1e293b; min-width: 50px; }
-.currency-row .currency-name { font-size: 14px; color: #64748b; }
-.currency-row .currency-symbol { font-size: 18px; font-weight: 600; color: #3b82f6; }
-.facility-preview-card { background: #f8fafc; border-radius: 12px; padding: 20px; text-align: center; }
-.facility-preview-logo { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; margin: 0 auto 12px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.preview-receipt { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; max-width: 280px; margin: 0 auto; }
-.preview-receipt-header { text-align: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; }
-.preview-receipt-logo { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; margin: 0 auto 8px; }
-.preview-receipt-title { font-size: 13px; font-weight: 700; color: #1e293b; }
-.preview-receipt-address { font-size: 10px; color: #94a3b8; margin-top: 2px; }
-.preview-receipt-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
-.preview-receipt-total { border-top: 1px dashed #e2e8f0; margin-top: 8px; padding-top: 8px; font-weight: 700; }
-.add-currency-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 6px; }
-.rate-input { width: 80px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 13px; text-align: right; }
+*{font-family:'Inter',sans-serif}
+.sidebar{background:#1e293b}
+.sidebar-item:hover{background:rgba(255,255,255,0.08)}
+.sidebar-item.active{background:rgba(59,130,246,0.15);border-right:3px solid #3b82f6;color:#3b82f6}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.tab-btn{padding:10px 20px;font-size:14px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none}
+.tab-btn:hover{color:#334155}
+.tab-btn.active{color:#3b82f6;border-bottom-color:#3b82f6}
+.form-input{width:100%;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all .2s;background:#fff}
+.form-input:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+.form-label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px}
+.btn-primary{background:#3b82f6;color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all .2s}
+.btn-primary:hover{background:#2563eb}
+.btn-secondary{background:#f1f5f9;color:#475569;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{background:#e2e8f0}
+.btn-danger{background:#fef2f2;color:#dc2626;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid #fecaca;cursor:pointer;transition:all .2s}
+.btn-danger:hover{background:#fee2e2}
+.btn-sm{padding:6px 12px;font-size:13px}
+.switch{position:relative;display:inline-block;width:44px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#cbd5e1;transition:.3s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%}
+input:checked+.slider{background-color:#3b82f6}
+input:checked+.slider:before{transform:translateX(20px)}
+.table-row:hover{background:#f8fafc}
+.dropdown-menu{position:absolute;right:0;top:100%;margin-top:4px;background:white;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);min-width:160px;z-index:50;display:none}
+.dropdown-menu.show{display:block}
+.dropdown-item{padding:8px 12px;font-size:13px;color:#374151;cursor:pointer;display:flex;align-items:center;gap:8px}
+.dropdown-item:hover{background:#f1f5f9}
+.dropdown-item.danger{color:#dc2626}
+.dropdown-item.danger:hover{background:#fef2f2}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;visibility:hidden;transition:all .2s}
+.modal-overlay.show{opacity:1;visibility:visible}
+.modal-content{background:white;border-radius:12px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:scale(0.95);transition:all .2s}
+.modal-overlay.show .modal-content{transform:scale(1)}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:white;padding:12px 20px;border-radius:8px;font-size:14px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.2);z-index:200;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.search-input{padding:8px 12px 8px 36px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;width:240px;background:white}
+.filter-select{padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;background:white;cursor:pointer}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.status-active{background:#22c55e}
+.status-inactive{background:#ef4444}
+.section-title{font-size:18px;font-weight:600;color:#1e293b;display:flex;align-items:center;gap:10px}
+.section-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-upload{border:2px dashed #e2e8f0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s}
+.logo-upload:hover{border-color:#3b82f6;background:#f8fafc}
+.logo-upload.has-image{border-style:solid;border-color:#3b82f6;background:#eff6ff}
+.currency-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;background:white;cursor:pointer;transition:all .2s}
+.currency-row:hover{border-color:#3b82f6}
+.currency-row.active{border-color:#3b82f6;background:#eff6ff}
+.rate-input{width:80px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:13px;text-align:right}
+.preview-receipt{background:white;border:1px solid #e2e8f0;border-radius:8px;padding:16px;max-width:280px;margin:0 auto}
+.preview-receipt-header{text-align:center;border-bottom:1px dashed #e2e8f0;padding-bottom:12px;margin-bottom:12px}
+.preview-receipt-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.preview-receipt-total{border-top:1px dashed #e2e8f0;margin-top:8px;padding-top:8px;font-weight:700}
+.role-super_admin{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.role-admin{background:#fff7ed;color:#ea580c;border-color:#fed7aa}
+.role-doctor{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}
+.role-nurse{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}
+.role-pharmacist{background:#faf5ff;color:#9333ea;border-color:#e9d5ff}
+.role-lab_technician{background:#ecfeff;color:#0891b2;border-color:#a5f3fc}
+.role-receptionist{background:#fefce8;color:#ca8a04;border-color:#fde047}
+.role-billing_staff{background:#fdf2f8;color:#db2777;border-color:#fbcfe8}
+.role-inventory_manager{background:#f7fee7;color:#65a30d;border-color:#d9f99d}
+.role-viewer{background:#f3f4f6;color:#6b7280;border-color:#e5e7eb}
 </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 <div class="flex h-screen">
-<!-- Sidebar -->
 <aside class="sidebar w-64 flex-shrink-0 flex flex-col">
 <div class="p-6 flex items-center gap-3">
-<div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-<i data-lucide="heart-pulse" class="w-5 h-5 text-white"></i>
-</div>
+<div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"><i data-lucide="heart-pulse" class="w-5 h-5 text-white"></i></div>
 <span class="text-white font-bold text-xl">MediFlow</span>
 </div>
 <nav class="flex-1 px-3 space-y-1">
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="gauge" class="w-5 h-5"></i> Dashboard
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="users" class="w-5 h-5"></i> Patients
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="user-check" class="w-5 h-5"></i> Visits
-<span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">12</span>
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="stethoscope" class="w-5 h-5"></i> Consultations
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="flask-conical" class="w-5 h-5"></i> Laboratory
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="pill" class="w-5 h-5"></i> Pharmacy
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="credit-card" class="w-5 h-5"></i> Billing
-</a>
-<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all">
-<i data-lucide="line-chart" class="w-5 h-5"></i> Analytics
-</a>
-<a href="#" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all">
-<i data-lucide="settings" class="w-5 h-5"></i> Settings
-</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="gauge" class="w-5 h-5"></i>Dashboard</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="users" class="w-5 h-5"></i>Patients</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="user-check" class="w-5 h-5"></i>Visits<span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">12</span></a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="stethoscope" class="w-5 h-5"></i>Consultations</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="flask-conical" class="w-5 h-5"></i>Laboratory</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="pill" class="w-5 h-5"></i>Pharmacy</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="credit-card" class="w-5 h-5"></i>Billing</a>
+<a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 text-sm font-medium transition-all"><i data-lucide="line-chart" class="w-5 h-5"></i>Analytics</a>
+<a href="#" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all"><i data-lucide="settings" class="w-5 h-5"></i>Settings</a>
 </nav>
 </aside>
 
-<!-- Main Content -->
 <main class="flex-1 overflow-y-auto">
 <header class="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-40">
 <div class="flex items-center justify-between">
@@ -139,42 +103,30 @@ input:checked + .slider:before { transform: translateX(20px); }
 <p class="text-sm text-gray-500 mt-1">Configure your MediFlow system</p>
 </div>
 <div class="flex items-center gap-4">
-<button class="p-2 rounded-lg hover:bg-gray-100 relative">
-<i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
-<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-</button>
+<button class="p-2 rounded-lg hover:bg-gray-100 relative"><i data-lucide="bell" class="w-5 h-5 text-gray-600"></i><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></button>
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center">
-<i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
-</div>
-<div class="text-sm">
-<p class="font-medium text-gray-900">Admin User</p>
-<p class="text-gray-500 text-xs">Super Administrator</p>
-</div>
+<div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center"><i data-lucide="user" class="w-5 h-5 text-blue-600"></i></div>
+<div class="text-sm"><p class="font-medium text-gray-900">Admin User</p><p class="text-gray-500 text-xs">Super Administrator</p></div>
 </div>
 </div>
 </div>
 </header>
 
 <div class="p-8 max-w-7xl mx-auto">
-<!-- Settings Tabs -->
 <div class="flex gap-1 mb-6 border-b border-gray-200">
-<button class="tab-btn active" onclick="switchTab('general')">General</button>
-<button class="tab-btn" onclick="switchTab('facility')">Facility Info</button>
-<button class="tab-btn" onclick="switchTab('currency')">Currency</button>
-<button class="tab-btn" onclick="switchTab('users')">Users & Roles</button>
-<button class="tab-btn" onclick="switchTab('permissions')">Permissions</button>
-<button class="tab-btn" onclick="switchTab('security')">Security</button>
+<button class="tab-btn active" onclick="switchTab('general',this)">General</button>
+<button class="tab-btn" onclick="switchTab('facility',this)">Facility Info</button>
+<button class="tab-btn" onclick="switchTab('currency',this)">Currency</button>
+<button class="tab-btn" onclick="switchTab('users',this)">Users & Roles</button>
+<button class="tab-btn" onclick="switchTab('permissions',this)">Permissions</button>
+<button class="tab-btn" onclick="switchTab('security',this)">Security</button>
 </div>
 
-<!-- GENERAL TAB -->
+<!-- GENERAL -->
 <div id="tab-general" class="tab-content">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 <div class="lg:col-span-2 card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="building-2" class="w-5 h-5"></i></div>
-Hospital Information
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="building-2" class="w-5 h-5"></i></div>Hospital Information</div>
 <div class="grid grid-cols-2 gap-4">
 <div><label class="form-label">Hospital Name</label><input type="text" class="form-input" value="MediFlow Hospital" id="hospitalName"></div>
 <div><label class="form-label">Department</label><input type="text" class="form-input" value="Outpatient Department (OPD)" id="department"></div>
@@ -184,36 +136,22 @@ Hospital Information
 </div>
 <div class="mt-6 flex justify-end gap-3">
 <button class="btn-secondary" onclick="resetForm()">Reset</button>
-<button class="btn-primary" onclick="saveHospitalInfo()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i> Save Changes</button>
+<button class="btn-primary" onclick="saveHospitalInfo()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i>Save Changes</button>
 </div>
 </div>
 <div class="space-y-6">
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-indigo-50 text-indigo-600"><i data-lucide="shield" class="w-5 h-5"></i></div>
-Security
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-indigo-50 text-indigo-600"><i data-lucide="shield" class="w-5 h-5"></i></div>Security</div>
 <div class="space-y-3">
-<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-all">
-<i data-lucide="key" class="w-4 h-4 text-blue-500"></i> Change Password
-</button>
-<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-all">
-<i data-lucide="fingerprint" class="w-4 h-4 text-blue-500"></i> Two-Factor Auth
-</button>
-<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-red-200 hover:bg-red-50 text-sm font-medium text-red-600 transition-all" onclick="clearCache()">
-<i data-lucide="trash-2" class="w-4 h-4"></i> Clear Cache
-</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-all"><i data-lucide="key" class="w-4 h-4 text-blue-500"></i>Change Password</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-all"><i data-lucide="fingerprint" class="w-4 h-4 text-blue-500"></i>Two-Factor Auth</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-red-200 hover:bg-red-50 text-sm font-medium text-red-600 transition-all" onclick="clearCache()"><i data-lucide="trash-2" class="w-4 h-4"></i>Clear Cache</button>
 </div>
 </div>
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="info" class="w-5 h-5"></i></div>
-About
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="info" class="w-5 h-5"></i></div>About</div>
 <div class="text-center">
-<div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
-<i data-lucide="heart-pulse" class="w-8 h-8 text-white"></i>
-</div>
+<div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-3"><i data-lucide="heart-pulse" class="w-8 h-8 text-white"></i></div>
 <h3 class="font-bold text-lg text-gray-900">MediFlow OPD</h3>
 <p class="text-sm text-gray-500 mt-1">Version 3.1.0</p>
 <p class="text-xs text-gray-400 mt-4">&copy; 2026 MediFlow Systems</p>
@@ -222,442 +160,188 @@ About
 </div>
 </div>
 <div class="card p-6 mt-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></div>
-System Preferences
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="sliders-horizontal" class="w-5 h-5"></i></div>System Preferences</div>
 <div class="space-y-4">
-<div class="flex items-center justify-between py-3 border-b border-gray-100">
-<div><p class="font-medium text-gray-900 text-sm">Auto-refresh Dashboard</p><p class="text-xs text-gray-500 mt-0.5">Automatically refresh patient queue every 30 seconds</p></div>
-<label class="switch"><input type="checkbox" checked id="autoRefresh"><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between py-3 border-b border-gray-100">
-<div><p class="font-medium text-gray-900 text-sm">SMS Notifications</p><p class="text-xs text-gray-500 mt-0.5">Send SMS alerts to patients for appointments and results</p></div>
-<label class="switch"><input type="checkbox" id="smsNotifications"><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between py-3 border-b border-gray-100">
-<div><p class="font-medium text-gray-900 text-sm">Email Notifications</p><p class="text-xs text-gray-500 mt-0.5">Send email receipts and discharge instructions</p></div>
-<label class="switch"><input type="checkbox" checked id="emailNotifications"><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between py-3">
-<div><p class="font-medium text-gray-900 text-sm">AI Diagnosis Assistant</p><p class="text-xs text-gray-500 mt-0.5">Enable AI-powered differential diagnosis suggestions</p></div>
-<label class="switch"><input type="checkbox" id="aiAssistant"><span class="slider"></span></label>
-</div>
+<div class="flex items-center justify-between py-3 border-b border-gray-100"><div><p class="font-medium text-gray-900 text-sm">Auto-refresh Dashboard</p><p class="text-xs text-gray-500 mt-0.5">Automatically refresh patient queue every 30 seconds</p></div><label class="switch"><input type="checkbox" checked id="autoRefresh"><span class="slider"></span></label></div>
+<div class="flex items-center justify-between py-3 border-b border-gray-100"><div><p class="font-medium text-gray-900 text-sm">SMS Notifications</p><p class="text-xs text-gray-500 mt-0.5">Send SMS alerts to patients for appointments and results</p></div><label class="switch"><input type="checkbox" id="smsNotifications"><span class="slider"></span></label></div>
+<div class="flex items-center justify-between py-3 border-b border-gray-100"><div><p class="font-medium text-gray-900 text-sm">Email Notifications</p><p class="text-xs text-gray-500 mt-0.5">Send email receipts and discharge instructions</p></div><label class="switch"><input type="checkbox" checked id="emailNotifications"><span class="slider"></span></label></div>
+<div class="flex items-center justify-between py-3"><div><p class="font-medium text-gray-900 text-sm">AI Diagnosis Assistant</p><p class="text-xs text-gray-500 mt-0.5">Enable AI-powered differential diagnosis suggestions</p></div><label class="switch"><input type="checkbox" id="aiAssistant"><span class="slider"></span></label></div>
 </div>
 </div>
 </div>
 
-<!-- FACILITY INFO TAB -->
+<!-- FACILITY -->
 <div id="tab-facility" class="tab-content hidden">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 <div class="lg:col-span-2 space-y-6">
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="building-2" class="w-5 h-5"></i></div>
-Facility Details
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="building-2" class="w-5 h-5"></i></div>Facility Details</div>
 <div class="grid grid-cols-2 gap-4">
-<div class="col-span-2">
-<label class="form-label">Facility Name *</label>
-<input type="text" class="form-input" id="facilityName" value="MediFlow Hospital" placeholder="e.g. St. John's Medical Center">
-</div>
-<div class="col-span-2">
-<label class="form-label">Tagline / Subtitle</label>
-<input type="text" class="form-input" id="facilityTagline" value="Excellence in Healthcare" placeholder="e.g. Your Health, Our Priority">
-</div>
-<div>
-<label class="form-label">Registration / License Number</label>
-<input type="text" class="form-input" id="facilityRegNo" value="HOSP-GH-2024-001" placeholder="e.g. HOSP-12345">
-</div>
-<div>
-<label class="form-label">Tax ID / VAT Number</label>
-<input type="text" class="form-input" id="facilityTaxId" value="VAT-GH-987654321" placeholder="e.g. VAT-123456">
-</div>
-<div class="col-span-2">
-<label class="form-label">Full Address *</label>
-<textarea class="form-input" rows="2" id="facilityAddress" placeholder="Street, City, Country">123 Hospital Road, East Legon, Accra, Ghana</textarea>
-</div>
-<div>
-<label class="form-label">City</label>
-<input type="text" class="form-input" id="facilityCity" value="Accra">
-</div>
-<div>
-<label class="form-label">Country *</label>
-<select class="form-input" id="facilityCountry" onchange="updateCountryPreview()">
-<option value="GH">Ghana</option>
-<option value="NG">Nigeria</option>
-<option value="KE">Kenya</option>
-<option value="ZA">South Africa</option>
-<option value="UG">Uganda</option>
-<option value="TZ">Tanzania</option>
-<option value="US">United States</option>
-<option value="GB">United Kingdom</option>
-<option value="IN">India</option>
-<option value="other">Other</option>
-</select>
-</div>
-<div>
-<label class="form-label">Phone *</label>
-<input type="text" class="form-input" id="facilityPhone" value="+233 302 000 000" placeholder="+233 302 000 000">
-</div>
-<div>
-<label class="form-label">Email *</label>
-<input type="email" class="form-input" id="facilityEmail" value="info@mediflow.local" placeholder="info@hospital.com">
-</div>
-<div>
-<label class="form-label">Website</label>
-<input type="text" class="form-input" id="facilityWebsite" value="www.mediflow.local" placeholder="www.hospital.com">
-</div>
-<div>
-<label class="form-label">Emergency Hotline</label>
-<input type="text" class="form-input" id="facilityEmergency" value="+233 302 999 999" placeholder="+233 302 999 999">
+<div class="col-span-2"><label class="form-label">Facility Name *</label><input type="text" class="form-input" id="facilityName" value="MediFlow Hospital"></div>
+<div class="col-span-2"><label class="form-label">Tagline / Subtitle</label><input type="text" class="form-input" id="facilityTagline" value="Excellence in Healthcare"></div>
+<div><label class="form-label">Registration / License Number</label><input type="text" class="form-input" id="facilityRegNo" value="HOSP-GH-2024-001"></div>
+<div><label class="form-label">Tax ID / VAT Number</label><input type="text" class="form-input" id="facilityTaxId" value="VAT-GH-987654321"></div>
+<div class="col-span-2"><label class="form-label">Full Address *</label><textarea class="form-input" rows="2" id="facilityAddress">123 Hospital Road, East Legon, Accra, Ghana</textarea></div>
+<div><label class="form-label">City</label><input type="text" class="form-input" id="facilityCity" value="Accra"></div>
+<div><label class="form-label">Country *</label><select class="form-input" id="facilityCountry" onchange="updateCountryPreview()"><option value="GH">Ghana</option><option value="NG">Nigeria</option><option value="KE">Kenya</option><option value="ZA">South Africa</option><option value="UG">Uganda</option><option value="TZ">Tanzania</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="IN">India</option><option value="other">Other</option></select></div>
+<div><label class="form-label">Phone *</label><input type="text" class="form-input" id="facilityPhone" value="+233 302 000 000"></div>
+<div><label class="form-label">Email *</label><input type="email" class="form-input" id="facilityEmail" value="info@mediflow.local"></div>
+<div><label class="form-label">Website</label><input type="text" class="form-input" id="facilityWebsite" value="www.mediflow.local"></div>
+<div><label class="form-label">Emergency Hotline</label><input type="text" class="form-input" id="facilityEmergency" value="+233 302 999 999"></div>
 </div>
 </div>
-</div>
-
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="image" class="w-5 h-5"></i></div>
-Branding & Logo
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="image" class="w-5 h-5"></i></div>Branding & Logo</div>
 <div class="grid grid-cols-2 gap-6">
 <div>
 <label class="form-label">Facility Logo</label>
 <div class="logo-upload" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
-<img id="logoPreview" class="logo-preview hidden" src="" alt="Logo">
-<div id="logoPlaceholder">
-<i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
-<p class="text-sm text-gray-600 font-medium">Click to upload logo</p>
-<p class="text-xs text-gray-400 mt-1">PNG, JPG, SVG (max 2MB)</p>
-</div>
+<img id="logoPreview" class="logo-preview hidden" src="" alt="Logo" style="width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 8px">
+<div id="logoPlaceholder"><i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i><p class="text-sm text-gray-600 font-medium">Click to upload logo</p><p class="text-xs text-gray-400 mt-1">PNG, JPG, SVG (max 2MB)</p></div>
 </div>
 <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="handleLogoUpload(event)">
-<div class="flex gap-2 mt-3">
-<button class="btn-secondary btn-sm flex-1" onclick="document.getElementById('logoInput').click()">
-<i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Change
-</button>
-<button class="btn-danger btn-sm flex-1" onclick="removeLogo()" id="removeLogoBtn" style="display:none;">
-<i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i> Remove
-</button>
-</div>
+<div class="flex gap-2 mt-3"><button class="btn-secondary btn-sm flex-1" onclick="document.getElementById('logoInput').click()"><i data-lucide="upload" class="w-3 h-3 inline mr-1"></i>Change</button><button class="btn-danger btn-sm flex-1" onclick="removeLogo()" id="removeLogoBtn" style="display:none"><i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i>Remove</button></div>
 </div>
 <div>
 <label class="form-label">Receipt / Report Header</label>
 <div class="logo-upload" id="headerUploadArea" onclick="document.getElementById('headerInput').click()">
-<img id="headerPreview" class="logo-preview hidden" style="width:100%;height:60px;border-radius:4px;" src="" alt="Header">
-<div id="headerPlaceholder">
-<i data-lucide="image" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
-<p class="text-sm text-gray-600 font-medium">Receipt header banner</p>
-<p class="text-xs text-gray-400 mt-1">Wide banner for receipts (max 2MB)</p>
-</div>
+<img id="headerPreview" class="logo-preview hidden" src="" alt="Header" style="width:100%;height:60px;border-radius:4px;object-fit:cover">
+<div id="headerPlaceholder"><i data-lucide="image" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i><p class="text-sm text-gray-600 font-medium">Receipt header banner</p><p class="text-xs text-gray-400 mt-1">Wide banner for receipts (max 2MB)</p></div>
 </div>
 <input type="file" id="headerInput" class="hidden" accept="image/*" onchange="handleHeaderUpload(event)">
-<div class="flex gap-2 mt-3">
-<button class="btn-secondary btn-sm flex-1" onclick="document.getElementById('headerInput').click()">
-<i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Change
-</button>
-<button class="btn-danger btn-sm flex-1" onclick="removeHeader()" id="removeHeaderBtn" style="display:none;">
-<i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i> Remove
-</button>
+<div class="flex gap-2 mt-3"><button class="btn-secondary btn-sm flex-1" onclick="document.getElementById('headerInput').click()"><i data-lucide="upload" class="w-3 h-3 inline mr-1"></i>Change</button><button class="btn-danger btn-sm flex-1" onclick="removeHeader()" id="removeHeaderBtn" style="display:none"><i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i>Remove</button></div>
 </div>
 </div>
 </div>
 </div>
-</div>
-
 <div class="space-y-6">
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-green-50 text-green-600"><i data-lucide="eye" class="w-5 h-5"></i></div>
-Live Preview
-</div>
-<div class="facility-preview-card">
-<img id="previewLogo" class="facility-preview-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%233b82f6' width='64' height='64' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E" alt="Logo">
-<div class="facility-preview-name" id="previewName">MediFlow Hospital</div>
-<div class="facility-preview-detail" id="previewTagline">Excellence in Healthcare</div>
-<div class="facility-preview-detail" id="previewAddress">123 Hospital Road, East Legon, Accra, Ghana</div>
-<div class="facility-preview-detail" id="previewContact">+233 302 000 000 | info@mediflow.local</div>
+<div class="section-title mb-4"><div class="section-icon bg-green-50 text-green-600"><i data-lucide="eye" class="w-5 h-5"></i></div>Live Preview</div>
+<div class="bg-gray-50 rounded-xl p-5 text-center">
+<img id="previewLogo" class="w-16 h-16 rounded-xl object-cover mx-auto mb-3 bg-white shadow-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%233b82f6' width='64' height='64' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E" alt="Logo">
+<div class="text-base font-bold text-gray-900" id="previewName">MediFlow Hospital</div>
+<div class="text-sm text-gray-500 mt-1" id="previewTagline">Excellence in Healthcare</div>
+<div class="text-sm text-gray-500 mt-1" id="previewAddress">123 Hospital Road, East Legon, Accra, Ghana</div>
+<div class="text-sm text-gray-500 mt-1" id="previewContact">+233 302 000 000 | info@mediflow.local</div>
 </div>
 <div class="mt-4">
 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Sample Receipt</p>
 <div class="preview-receipt">
 <div class="preview-receipt-header">
-<img id="previewReceiptLogo" class="preview-receipt-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%233b82f6' width='40' height='40' rx='6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E" alt="Logo">
-<div class="preview-receipt-title" id="previewReceiptName">MediFlow Hospital</div>
-<div class="preview-receipt-address" id="previewReceiptAddress">123 Hospital Road, Accra, Ghana</div>
-<div class="preview-receipt-address" id="previewReceiptPhone">Tel: +233 302 000 000</div>
+<img id="previewReceiptLogo" class="w-10 h-10 rounded-md object-cover mx-auto mb-2" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%233b82f6' width='40' height='40' rx='6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E" alt="Logo">
+<div class="text-sm font-bold text-gray-900" id="previewReceiptName">MediFlow Hospital</div>
+<div class="text-xs text-gray-400 mt-1" id="previewReceiptAddress">123 Hospital Road, Accra, Ghana</div>
+<div class="text-xs text-gray-400 mt-0.5" id="previewReceiptPhone">Tel: +233 302 000 000</div>
 </div>
-<div class="preview-receipt-row"><span>Consultation Fee</span><span id="previewCurrencySymbol1">GH&#8373;</span><span>150.00</span></div>
-<div class="preview-receipt-row"><span>Lab Tests</span><span id="previewCurrencySymbol2">GH&#8373;</span><span>85.00</span></div>
-<div class="preview-receipt-row"><span>Medications</span><span id="previewCurrencySymbol3">GH&#8373;</span><span>42.50</span></div>
-<div class="preview-receipt-total preview-receipt-row"><span>TOTAL</span><span id="previewCurrencySymbol4">GH&#8373;</span><span>277.50</span></div>
+<div class="preview-receipt-row"><span>Consultation Fee</span><span class="flex gap-1"><span id="previewCurrencySymbol1">GH&#8373;</span><span>150.00</span></span></div>
+<div class="preview-receipt-row"><span>Lab Tests</span><span class="flex gap-1"><span id="previewCurrencySymbol2">GH&#8373;</span><span>85.00</span></span></div>
+<div class="preview-receipt-row"><span>Medications</span><span class="flex gap-1"><span id="previewCurrencySymbol3">GH&#8373;</span><span>42.50</span></span></div>
+<div class="preview-receipt-total preview-receipt-row"><span>TOTAL</span><span class="flex gap-1"><span id="previewCurrencySymbol4">GH&#8373;</span><span>277.50</span></span></div>
 </div>
 </div>
 </div>
-
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-orange-50 text-orange-600"><i data-lucide="globe" class="w-5 h-5"></i></div>
-Multi-Facility Info
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-orange-50 text-orange-600"><i data-lucide="globe" class="w-5 h-5"></i></div>Multi-Facility Info</div>
 <div class="space-y-3 text-sm">
-<div class="flex justify-between items-center py-2 border-b border-gray-100">
-<span class="text-gray-600">Facility ID</span>
-<span class="font-mono text-gray-900 font-medium">MEDF-ACC-001</span>
+<div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">Facility ID</span><span class="font-mono text-gray-900 font-medium">MEDF-ACC-001</span></div>
+<div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">Instance Type</span><span class="text-gray-900 font-medium">Primary / Main</span></div>
+<div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">Region</span><span class="text-gray-900 font-medium">Greater Accra</span></div>
+<div class="flex justify-between items-center py-2"><span class="text-gray-600">Time Zone</span><span class="text-gray-900 font-medium">GMT (UTC+0)</span></div>
 </div>
-<div class="flex justify-between items-center py-2 border-b border-gray-100">
-<span class="text-gray-600">Instance Type</span>
-<span class="text-gray-900 font-medium">Primary / Main</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-gray-100">
-<span class="text-gray-600">Region</span>
-<span class="text-gray-900 font-medium">Greater Accra</span>
-</div>
-<div class="flex justify-between items-center py-2">
-<span class="text-gray-600">Time Zone</span>
-<span class="text-gray-900 font-medium">GMT (UTC+0)</span>
-</div>
-</div>
-<div class="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
-<i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
-This facility config is used across all modules: receipts, lab reports, prescriptions, and referral letters.
-</div>
+<div class="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700"><i data-lucide="info" class="w-3 h-3 inline mr-1"></i>This facility config is used across all modules: receipts, lab reports, prescriptions, and referral letters.</div>
 </div>
 </div>
 </div>
 <div class="flex justify-end gap-3 mt-6">
 <button class="btn-secondary" onclick="resetFacility()">Reset to Default</button>
-<button class="btn-primary" onclick="saveFacility()">
-<i data-lucide="save" class="w-4 h-4 inline mr-1"></i> Save Facility Settings
-</button>
+<button class="btn-primary" onclick="saveFacility()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i>Save Facility Settings</button>
 </div>
 </div>
 
-<!-- CURRENCY TAB -->
+<!-- CURRENCY -->
 <div id="tab-currency" class="tab-content hidden">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 <div class="lg:col-span-2 space-y-6">
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-green-50 text-green-600"><i data-lucide="banknote" class="w-5 h-5"></i></div>
-Default Currency
-</div>
-<div class="mb-4">
-<label class="form-label">Select Default Currency</label>
+<div class="section-title mb-6"><div class="section-icon bg-green-50 text-green-600"><i data-lucide="banknote" class="w-5 h-5"></i></div>Default Currency</div>
 <p class="text-xs text-gray-500 mb-3">This currency will be used for all billing, invoices, receipts, and reports across the system.</p>
-</div>
 <div id="currencyList"></div>
 </div>
-
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="text" class="w-5 h-5"></i></div>
-Currency Formatting
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="text" class="w-5 h-5"></i></div>Currency Formatting</div>
 <div class="grid grid-cols-2 gap-4">
-<div>
-<label class="form-label">Symbol Position</label>
-<select class="form-input" id="symbolPosition" onchange="updateFormatPreview()">
-<option value="before">Before amount (e.g. GH&#8373; 100)</option>
-<option value="after">After amount (e.g. 100 GH&#8373;)</option>
-</select>
+<div><label class="form-label">Symbol Position</label><select class="form-input" id="symbolPosition" onchange="updateFormatPreview()"><option value="before">Before amount (e.g. GH&#8373; 100)</option><option value="after">After amount (e.g. 100 GH&#8373;)</option></select></div>
+<div><label class="form-label">Decimal Separator</label><select class="form-input" id="decimalSeparator" onchange="updateFormatPreview()"><option value=".">Period (.)</option><option value=",">Comma (,)</option></select></div>
+<div><label class="form-label">Thousands Separator</label><select class="form-input" id="thousandsSeparator" onchange="updateFormatPreview()"><option value=",">Comma (,)</option><option value=".">Period (.)</option><option value=" ">Space</option></select></div>
+<div><label class="form-label">Decimal Places</label><select class="form-input" id="decimalPlaces" onchange="updateFormatPreview()"><option value="0">0 (whole numbers)</option><option value="2" selected>2 (standard)</option><option value="3">3 (precision)</option></select></div>
 </div>
-<div>
-<label class="form-label">Decimal Separator</label>
-<select class="form-input" id="decimalSeparator" onchange="updateFormatPreview()">
-<option value=".">Period (.)</option>
-<option value=",">Comma (,)</option>
-</select>
+<div class="mt-4 p-4 bg-gray-50 rounded-lg"><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Format Preview</p><div class="flex items-center gap-4"><div class="text-2xl font-bold text-gray-900" id="formatPreview">GH&#8373; 1,234.56</div><div class="text-sm text-gray-500">Sample: 1234.56</div></div></div>
 </div>
-<div>
-<label class="form-label">Thousands Separator</label>
-<select class="form-input" id="thousandsSeparator" onchange="updateFormatPreview()">
-<option value=",">Comma (,)</option>
-<option value=".">Period (.)</option>
-<option value=" ">Space</option>
-</select>
-</div>
-<div>
-<label class="form-label">Decimal Places</label>
-<select class="form-input" id="decimalPlaces" onchange="updateFormatPreview()">
-<option value="0">0 (whole numbers)</option>
-<option value="2" selected>2 (standard)</option>
-<option value="3">3 (precision)</option>
-</select>
-</div>
-</div>
-<div class="mt-4 p-4 bg-gray-50 rounded-lg">
-<p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Format Preview</p>
-<div class="flex items-center gap-4">
-<div class="text-2xl font-bold text-gray-900" id="formatPreview">GH&#8373; 1,234.56</div>
-<div class="text-sm text-gray-500">Sample: 1234.56</div>
-</div>
-</div>
-</div>
-
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="coins" class="w-5 h-5"></i></div>
-Additional Accepted Currencies
-<span class="ml-auto text-xs font-normal text-gray-500">For multi-currency billing</span>
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-purple-50 text-purple-600"><i data-lucide="coins" class="w-5 h-5"></i></div>Additional Accepted Currencies<span class="ml-auto text-xs font-normal text-gray-500">For multi-currency billing</span></div>
 <div class="space-y-3" id="additionalCurrencies"></div>
-<div class="mt-4 flex gap-3">
-<select class="form-input flex-1" id="addCurrencySelect">
-<option value="">Select currency to add...</option>
-<option value="USD">USD - US Dollar ($)</option>
-<option value="EUR">EUR - Euro (&#8364;)</option>
-<option value="GBP">GBP - British Pound (&#163;)</option>
-<option value="NGN">NGN - Nigerian Naira (&#8358;)</option>
-<option value="KES">KES - Kenyan Shilling (KSh)</option>
-<option value="ZAR">ZAR - South African Rand (R)</option>
-<option value="UGX">UGX - Ugandan Shilling (USh)</option>
-<option value="TZS">TZS - Tanzanian Shilling (TSh)</option>
-<option value="INR">INR - Indian Rupee (&#8377;)</option>
-</select>
-<button class="btn-primary" onclick="addCurrency()">
-<i data-lucide="plus" class="w-4 h-4 inline mr-1"></i> Add
-</button>
+<div class="mt-4 flex gap-3"><select class="form-input flex-1" id="addCurrencySelect"><option value="">Select currency to add...</option><option value="USD">USD - US Dollar ($)</option><option value="EUR">EUR - Euro (&#8364;)</option><option value="GBP">GBP - British Pound (&#163;)</option><option value="NGN">NGN - Nigerian Naira (&#8358;)</option><option value="KES">KES - Kenyan Shilling (KSh)</option><option value="ZAR">ZAR - South African Rand (R)</option><option value="UGX">UGX - Ugandan Shilling (USh)</option><option value="TZS">TZS - Tanzanian Shilling (TSh)</option><option value="INR">INR - Indian Rupee (&#8377;)</option></select><button class="btn-primary" onclick="addCurrency()"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Add</button></div>
 </div>
 </div>
-</div>
-
 <div class="space-y-6">
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-yellow-50 text-yellow-600"><i data-lucide="receipt" class="w-5 h-5"></i></div>
-Receipt Preview
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-yellow-50 text-yellow-600"><i data-lucide="receipt" class="w-5 h-5"></i></div>Receipt Preview</div>
 <div class="preview-receipt">
-<div class="preview-receipt-header">
-<div class="preview-receipt-title">MediFlow Hospital</div>
-<div class="preview-receipt-address">123 Hospital Road, Accra, Ghana</div>
-</div>
+<div class="preview-receipt-header"><div class="text-sm font-bold text-gray-900">MediFlow Hospital</div><div class="text-xs text-gray-400">123 Hospital Road, Accra, Ghana</div></div>
 <div class="preview-receipt-row"><span>Date</span><span>13/06/2026</span></div>
 <div class="preview-receipt-row"><span>Patient</span><span>Kwame Asante</span></div>
 <div class="border-t border-dashed border-gray-200 my-2"></div>
-<div class="preview-receipt-row"><span>Consultation</span><span id="receiptCurrency1">GH&#8373;</span><span>150.00</span></div>
-<div class="preview-receipt-row"><span>Lab Tests</span><span id="receiptCurrency2">GH&#8373;</span><span>85.00</span></div>
-<div class="preview-receipt-row"><span>Pharmacy</span><span id="receiptCurrency3">GH&#8373;</span><span>42.50</span></div>
-<div class="preview-receipt-total preview-receipt-row"><span>TOTAL</span><span id="receiptCurrency4">GH&#8373;</span><span>277.50</span></div>
+<div class="preview-receipt-row"><span>Consultation</span><span class="flex gap-1"><span id="receiptCurrency1">GH&#8373;</span><span>150.00</span></span></div>
+<div class="preview-receipt-row"><span>Lab Tests</span><span class="flex gap-1"><span id="receiptCurrency2">GH&#8373;</span><span>85.00</span></span></div>
+<div class="preview-receipt-row"><span>Pharmacy</span><span class="flex gap-1"><span id="receiptCurrency3">GH&#8373;</span><span>42.50</span></span></div>
+<div class="preview-receipt-total preview-receipt-row"><span>TOTAL</span><span class="flex gap-1"><span id="receiptCurrency4">GH&#8373;</span><span>277.50</span></span></div>
 <div class="border-t border-dashed border-gray-200 my-2"></div>
-<div class="preview-receipt-row"><span>Paid</span><span id="receiptCurrency5">GH&#8373;</span><span>277.50</span></div>
-<div class="preview-receipt-row"><span>Balance</span><span id="receiptCurrency6">GH&#8373;</span><span>0.00</span></div>
+<div class="preview-receipt-row"><span>Paid</span><span class="flex gap-1"><span id="receiptCurrency5">GH&#8373;</span><span>277.50</span></span></div>
+<div class="preview-receipt-row"><span>Balance</span><span class="flex gap-1"><span id="receiptCurrency6">GH&#8373;</span><span>0.00</span></span></div>
 </div>
 </div>
-
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-cyan-50 text-cyan-600"><i data-lucide="calculator" class="w-5 h-5"></i></div>
-Exchange Rates
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-cyan-50 text-cyan-600"><i data-lucide="calculator" class="w-5 h-5"></i></div>Exchange Rates</div>
 <div class="space-y-3 text-sm" id="exchangeRates"></div>
-<div class="mt-3 p-3 bg-yellow-50 rounded-lg text-xs text-yellow-700">
-<i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>
-Rates are for reference only. Update daily via API or manual entry.
+<div class="mt-3 p-3 bg-yellow-50 rounded-lg text-xs text-yellow-700"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>Rates are for reference only. Update daily via API or manual entry.</div>
 </div>
-</div>
-
 <div class="card p-6">
-<div class="section-title mb-4">
-<div class="section-icon bg-gray-50 text-gray-600"><i data-lucide="history" class="w-5 h-5"></i></div>
-Currency History
-</div>
+<div class="section-title mb-4"><div class="section-icon bg-gray-50 text-gray-600"><i data-lucide="history" class="w-5 h-5"></i></div>Currency History</div>
 <div class="space-y-2 text-sm">
-<div class="flex justify-between py-1.5 border-b border-gray-100">
-<span class="text-gray-600">Last changed</span>
-<span class="text-gray-900 font-medium">12 Jun 2026, 14:30</span>
-</div>
-<div class="flex justify-between py-1.5 border-b border-gray-100">
-<span class="text-gray-600">Changed by</span>
-<span class="text-gray-900 font-medium">admin</span>
-</div>
-<div class="flex justify-between py-1.5">
-<span class="text-gray-600">Previous currency</span>
-<span class="text-gray-900 font-medium">USD ($)</span>
-</div>
+<div class="flex justify-between py-1.5 border-b border-gray-100"><span class="text-gray-600">Last changed</span><span class="text-gray-900 font-medium">12 Jun 2026, 14:30</span></div>
+<div class="flex justify-between py-1.5 border-b border-gray-100"><span class="text-gray-600">Changed by</span><span class="text-gray-900 font-medium">admin</span></div>
+<div class="flex justify-between py-1.5"><span class="text-gray-600">Previous currency</span><span class="text-gray-900 font-medium">USD ($)</span></div>
 </div>
 </div>
 </div>
 </div>
 <div class="flex justify-end gap-3 mt-6">
 <button class="btn-secondary" onclick="resetCurrency()">Reset to Default</button>
-<button class="btn-primary" onclick="saveCurrency()">
-<i data-lucide="save" class="w-4 h-4 inline mr-1"></i> Save Currency Settings
-</button>
+<button class="btn-primary" onclick="saveCurrency()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i>Save Currency Settings</button>
 </div>
 </div>
 
-<!-- USERS & ROLES TAB -->
+<!-- USERS -->
 <div id="tab-users" class="tab-content hidden">
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
-<div class="card p-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-blue-600"></i></div>
-<div><p class="text-2xl font-bold text-gray-900" id="totalUsers">0</p><p class="text-xs text-gray-500">Total Users</p></div>
+<div class="card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-blue-600"></i></div><div><p class="text-2xl font-bold text-gray-900" id="totalUsers">0</p><p class="text-xs text-gray-500">Total Users</p></div></div></div>
+<div class="card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center"><i data-lucide="user-check" class="w-5 h-5 text-green-600"></i></div><div><p class="text-2xl font-bold text-gray-900" id="activeUsers">0</p><p class="text-xs text-gray-500">Active</p></div></div></div>
+<div class="card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center"><i data-lucide="stethoscope" class="w-5 h-5 text-purple-600"></i></div><div><p class="text-2xl font-bold text-gray-900" id="doctorCount">0</p><p class="text-xs text-gray-500">Doctors</p></div></div></div>
+<div class="card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center"><i data-lucide="flask-conical" class="w-5 h-5 text-cyan-600"></i></div><div><p class="text-2xl font-bold text-gray-900" id="labCount">0</p><p class="text-xs text-gray-500">Lab Techs</p></div></div></div>
+<div class="card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center"><i data-lucide="calendar" class="w-5 h-5 text-yellow-600"></i></div><div><p class="text-2xl font-bold text-gray-900" id="receptionCount">0</p><p class="text-xs text-gray-500">Reception</p></div></div></div>
 </div>
-</div>
-<div class="card p-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center"><i data-lucide="user-check" class="w-5 h-5 text-green-600"></i></div>
-<div><p class="text-2xl font-bold text-gray-900" id="activeUsers">0</p><p class="text-xs text-gray-500">Active</p></div>
-</div>
-</div>
-<div class="card p-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center"><i data-lucide="stethoscope" class="w-5 h-5 text-purple-600"></i></div>
-<div><p class="text-2xl font-bold text-gray-900" id="doctorCount">0</p><p class="text-xs text-gray-500">Doctors</p></div>
-</div>
-</div>
-<div class="card p-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center"><i data-lucide="flask-conical" class="w-5 h-5 text-cyan-600"></i></div>
-<div><p class="text-2xl font-bold text-gray-900" id="labCount">0</p><p class="text-xs text-gray-500">Lab Techs</p></div>
-</div>
-</div>
-<div class="card p-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center"><i data-lucide="calendar" class="w-5 h-5 text-yellow-600"></i></div>
-<div><p class="text-2xl font-bold text-gray-900" id="receptionCount">0</p><p class="text-xs text-gray-500">Reception</p></div>
-</div>
-</div>
-</div>
-
 <div class="card">
 <div class="p-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
 <div class="flex items-center gap-3">
-<div class="relative">
-<i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-<input type="text" class="search-input" placeholder="Search users..." id="userSearch" oninput="filterUsers()">
+<div class="relative"><i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i><input type="text" class="search-input" placeholder="Search users..." id="userSearch" oninput="filterUsers()"></div>
+<select class="filter-select" id="roleFilter" onchange="filterUsers()"><option value="">All Roles</option><option value="super_admin">Super Admin</option><option value="admin">Admin</option><option value="doctor">Doctor</option><option value="nurse">Nurse</option><option value="pharmacist">Pharmacist</option><option value="lab_technician">Lab Technician</option><option value="receptionist">Receptionist</option><option value="billing_staff">Billing Staff</option><option value="inventory_manager">Inventory Manager</option><option value="viewer">Viewer</option></select>
+<select class="filter-select" id="statusFilter" onchange="filterUsers()"><option value="">All Status</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
 </div>
-<select class="filter-select" id="roleFilter" onchange="filterUsers()">
-<option value="">All Roles</option>
-<option value="super_admin">Super Admin</option>
-<option value="admin">Admin</option>
-<option value="doctor">Doctor</option>
-<option value="nurse">Nurse</option>
-<option value="pharmacist">Pharmacist</option>
-<option value="lab_technician">Lab Technician</option>
-<option value="receptionist">Receptionist</option>
-<option value="billing_staff">Billing Staff</option>
-<option value="inventory_manager">Inventory Manager</option>
-<option value="viewer">Viewer</option>
-</select>
-<select class="filter-select" id="statusFilter" onchange="filterUsers()">
-<option value="">All Status</option>
-<option value="active">Active</option>
-<option value="inactive">Inactive</option>
-</select>
-</div>
-<div class="flex items-center gap-2">
-<button class="btn-secondary btn-sm" onclick="exportUsers()"><i data-lucide="download" class="w-4 h-4 inline mr-1"></i> Export</button>
-<button class="btn-primary btn-sm" onclick="openUserModal()"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i> Add User</button>
-</div>
+<div class="flex items-center gap-2"><button class="btn-secondary btn-sm" onclick="exportUsers()"><i data-lucide="download" class="w-4 h-4 inline mr-1"></i>Export</button><button class="btn-primary btn-sm" onclick="openUserModal()"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Add User</button></div>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full">
-<thead>
-<tr class="border-b border-gray-100">
+<thead><tr class="border-b border-gray-100">
 <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">User</th>
 <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Role</th>
 <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Department</th>
@@ -665,32 +349,24 @@ Currency History
 <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Last Login</th>
 <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Status</th>
 <th class="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Actions</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody id="usersTableBody"></tbody>
 </table>
 </div>
 <div class="p-4 border-t border-gray-100 flex items-center justify-between">
 <p class="text-sm text-gray-500" id="paginationInfo">Showing 0 of 0 users</p>
-<div class="flex items-center gap-2">
-<button class="btn-secondary btn-sm" onclick="prevPage()" id="prevBtn">Previous</button>
-<button class="btn-secondary btn-sm" onclick="nextPage()" id="nextBtn">Next</button>
-</div>
+<div class="flex items-center gap-2"><button class="btn-secondary btn-sm" onclick="prevPage()" id="prevBtn">Previous</button><button class="btn-secondary btn-sm" onclick="nextPage()" id="nextBtn">Next</button></div>
 </div>
 </div>
 </div>
 
-<!-- PERMISSIONS TAB -->
+<!-- PERMISSIONS -->
 <div id="tab-permissions" class="tab-content hidden">
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-indigo-50 text-indigo-600"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
-Role Permissions Matrix
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-indigo-50 text-indigo-600"><i data-lucide="shield-check" class="w-5 h-5"></i></div>Role Permissions Matrix</div>
 <div class="overflow-x-auto">
 <table class="w-full text-sm">
-<thead>
-<tr class="border-b border-gray-200">
+<thead><tr class="border-b border-gray-200">
 <th class="text-left font-semibold text-gray-700 py-3 px-4 sticky left-0 bg-white">Feature / Module</th>
 <th class="text-center font-semibold text-gray-700 py-3 px-2">Super Admin</th>
 <th class="text-center font-semibold text-gray-700 py-3 px-2">Admin</th>
@@ -700,91 +376,55 @@ Role Permissions Matrix
 <th class="text-center font-semibold text-gray-700 py-3 px-2">Lab Tech</th>
 <th class="text-center font-semibold text-gray-700 py-3 px-2">Reception</th>
 <th class="text-center font-semibold text-gray-700 py-3 px-2">Billing</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody id="permissionsTableBody"></tbody>
 </table>
 </div>
 <div class="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-800">
 <p class="font-semibold mb-1">Legend:</p>
 <div class="flex flex-wrap gap-4 mt-2">
-<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span> Full Access</span>
-<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-yellow-400 inline-block"></span> Own/Dept Only</span>
-<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-400 inline-block"></span> View Only</span>
-<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-gray-300 inline-block"></span> No Access</span>
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span>Full Access</span>
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-yellow-400 inline-block"></span>Own/Dept Only</span>
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-400 inline-block"></span>View Only</span>
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-gray-300 inline-block"></span>No Access</span>
 </div>
 </div>
 </div>
 </div>
 
-<!-- SECURITY TAB -->
+<!-- SECURITY -->
 <div id="tab-security" class="tab-content hidden">
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-red-50 text-red-600"><i data-lucide="lock" class="w-5 h-5"></i></div>
-Password Policy
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-red-50 text-red-600"><i data-lucide="lock" class="w-5 h-5"></i></div>Password Policy</div>
 <div class="space-y-4">
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Minimum Length</p><p class="text-xs text-gray-500">Require at least 8 characters</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Complexity Requirements</p><p class="text-xs text-gray-500">Uppercase, number, special char</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Force Password Change</p><p class="text-xs text-gray-500">Every 90 days for admin roles</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Account Lockout</p><p class="text-xs text-gray-500">After 5 failed attempts (30 min)</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Minimum Length</p><p class="text-xs text-gray-500">Require at least 8 characters</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Complexity Requirements</p><p class="text-xs text-gray-500">Uppercase, number, special char</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Force Password Change</p><p class="text-xs text-gray-500">Every 90 days for admin roles</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Account Lockout</p><p class="text-xs text-gray-500">After 5 failed attempts (30 min)</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
 </div>
 </div>
 <div class="card p-6">
-<div class="section-title mb-6">
-<div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="clock" class="w-5 h-5"></i></div>
-Session Management
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-blue-50 text-blue-600"><i data-lucide="clock" class="w-5 h-5"></i></div>Session Management</div>
 <div class="space-y-4">
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Idle Timeout</p><p class="text-xs text-gray-500">Auto-logout after 15 min idle</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Absolute Timeout</p><p class="text-xs text-gray-500">Force re-login after 8 hours</p></div>
-<label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">Concurrent Sessions</p><p class="text-xs text-gray-500">Allow only 1 active session</p></div>
-<label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<div><p class="font-medium text-sm text-gray-900">IP Restriction</p><p class="text-xs text-gray-500">Limit login to hospital IPs</p></div>
-<label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Idle Timeout</p><p class="text-xs text-gray-500">Auto-logout after 15 min idle</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Absolute Timeout</p><p class="text-xs text-gray-500">Force re-login after 8 hours</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">Concurrent Sessions</p><p class="text-xs text-gray-500">Allow only 1 active session</p></div><label class="switch"><input type="checkbox"><span class="slider"></span></label></div>
+<div class="flex items-center justify-between"><div><p class="font-medium text-sm text-gray-900">IP Restriction</p><p class="text-xs text-gray-500">Limit login to hospital IPs</p></div><label class="switch"><input type="checkbox"><span class="slider"></span></label></div>
 </div>
 </div>
 <div class="card p-6 lg:col-span-2">
-<div class="section-title mb-6">
-<div class="section-icon bg-gray-50 text-gray-600"><i data-lucide="file-text" class="w-5 h-5"></i></div>
-Audit Log
-</div>
+<div class="section-title mb-6"><div class="section-icon bg-gray-50 text-gray-600"><i data-lucide="file-text" class="w-5 h-5"></i></div>Audit Log</div>
 <div class="overflow-x-auto">
 <table class="w-full text-sm">
-<thead>
-<tr class="border-b border-gray-100">
+<thead><tr class="border-b border-gray-100">
 <th class="text-left font-semibold text-gray-500 py-2 px-3">Timestamp</th>
 <th class="text-left font-semibold text-gray-500 py-2 px-3">User</th>
 <th class="text-left font-semibold text-gray-500 py-2 px-3">Action</th>
 <th class="text-left font-semibold text-gray-500 py-2 px-3">Module</th>
 <th class="text-left font-semibold text-gray-500 py-2 px-3">IP Address</th>
 <th class="text-left font-semibold text-gray-500 py-2 px-3">Status</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody id="auditLogBody"></tbody>
 </table>
 </div>
@@ -795,7 +435,7 @@ Audit Log
 </main>
 </div>
 
-<!-- ADD/EDIT USER MODAL -->
+<!-- USER MODAL -->
 <div class="modal-overlay" id="userModal">
 <div class="modal-content">
 <div class="p-6 border-b border-gray-100 flex items-center justify-between">
@@ -812,653 +452,524 @@ Audit Log
 <div><label class="form-label">Phone</label><input type="tel" class="form-input" id="userPhone" placeholder="0302-000-000"></div>
 </div>
 <div class="grid grid-cols-2 gap-4">
-<div>
-<label class="form-label">Role *</label>
-<select class="form-input" id="userRole" onchange="toggleLicenseField()">
-<option value="">Select Role</option>
-<option value="super_admin">Super Administrator</option>
-<option value="admin">Administrator</option>
-<option value="doctor">Doctor</option>
-<option value="nurse">Nurse</option>
-<option value="pharmacist">Pharmacist</option>
-<option value="lab_technician">Lab Technician</option>
-<option value="receptionist">Receptionist</option>
-<option value="billing_staff">Billing Staff</option>
-<option value="inventory_manager">Inventory Manager</option>
-<option value="viewer">Read-Only Viewer</option>
-</select>
+<div><label class="form-label">Role *</label><select class="form-input" id="userRole" onchange="toggleLicenseField()"><option value="">Select Role</option><option value="super_admin">Super Administrator</option><option value="admin">Administrator</option><option value="doctor">Doctor</option><option value="nurse">Nurse</option><option value="pharmacist">Pharmacist</option><option value="lab_technician">Lab Technician</option><option value="receptionist">Receptionist</option><option value="billing_staff">Billing Staff</option><option value="inventory_manager">Inventory Manager</option><option value="viewer">Read-Only Viewer</option></select></div>
+<div><label class="form-label">Department</label><select class="form-input" id="userDepartment"><option value="">Select Department</option><option value="OPD">OPD</option><option value="Pharmacy">Pharmacy</option><option value="Laboratory">Laboratory</option><option value="Billing">Billing</option><option value="Administration">Administration</option><option value="Nursing">Nursing</option></select></div>
 </div>
-<div>
-<label class="form-label">Department</label>
-<select class="form-input" id="userDepartment">
-<option value="">Select Department</option>
-<option value="OPD">OPD</option>
-<option value="Pharmacy">Pharmacy</option>
-<option value="Laboratory">Laboratory</option>
-<option value="Billing">Billing</option>
-<option value="Administration">Administration</option>
-<option value="Nursing">Nursing</option>
-</select>
-</div>
-</div>
-<div id="licenseField" class="hidden">
-<label class="form-label">License Number</label>
-<input type="text" class="form-input" id="userLicense" placeholder="GMC-12345-2024">
-</div>
-<div>
-<label class="form-label">Password <span id="passwordHint" class="text-gray-400 font-normal">(leave blank to keep current)</span></label>
-<input type="password" class="form-input" id="userPassword" placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special">
-</div>
-<div class="flex items-center gap-3 pt-2">
-<label class="switch"><input type="checkbox" checked id="userActive"><span class="slider"></span></label>
-<span class="text-sm text-gray-700 font-medium">Account Active</span>
-</div>
+<div id="licenseField" style="display:none"><label class="form-label">License Number</label><input type="text" class="form-input" id="userLicense" placeholder="GMC-12345-2024"></div>
+<div><label class="form-label">Password <span id="passwordHint" class="text-gray-400 font-normal">(leave blank to keep current)</span></label><input type="password" class="form-input" id="userPassword" placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special"></div>
+<div class="flex items-center gap-3 pt-2"><label class="switch"><input type="checkbox" checked id="userActive"><span class="slider"></span></label><span class="text-sm text-gray-700 font-medium">Account Active</span></div>
 </div>
 <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
 <button class="btn-secondary" onclick="closeUserModal()">Cancel</button>
-<button class="btn-primary" onclick="saveUser()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i> Save User</button>
+<button class="btn-primary" onclick="saveUser()"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i>Save User</button>
 </div>
 </div>
 </div>
 
-<!-- DELETE CONFIRMATION MODAL -->
+<!-- DELETE MODAL -->
 <div class="modal-overlay" id="deleteModal">
-<div class="modal-content" style="max-width: 400px;">
+<div class="modal-content" style="max-width:400px">
 <div class="p-6 text-center">
-<div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-<i data-lucide="alert-triangle" class="w-7 h-7 text-red-500"></i>
-</div>
+<div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="alert-triangle" class="w-7 h-7 text-red-500"></i></div>
 <h3 class="text-lg font-semibold text-gray-900 mb-2">Deactivate User?</h3>
 <p class="text-sm text-gray-500 mb-6">This will deactivate <span id="deleteUserName" class="font-semibold text-gray-700"></span>. They will no longer be able to log in. You can reactivate them later.</p>
-<div class="flex justify-center gap-3">
-<button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-<button class="btn-danger" onclick="confirmDelete()">Deactivate</button>
-</div>
+<div class="flex justify-center gap-3"><button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button><button class="btn-danger" onclick="confirmDelete()">Deactivate</button></div>
 </div>
 </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+const roleConfig={super_admin:{display:'Super Admin',color:'role-super_admin',icon:'shield'},admin:{display:'Admin',color:'role-admin',icon:'settings'},doctor:{display:'Doctor',color:'role-doctor',icon:'stethoscope'},nurse:{display:'Nurse',color:'role-nurse',icon:'heart'},pharmacist:{display:'Pharmacist',color:'role-pharmacist',icon:'pill'},lab_technician:{display:'Lab Tech',color:'role-lab_technician',icon:'flask-conical'},receptionist:{display:'Receptionist',color:'role-receptionist',icon:'calendar'},billing_staff:{display:'Billing',color:'role-billing_staff',icon:'credit-card'},inventory_manager:{display:'Inventory',color:'role-inventory_manager',icon:'package'},viewer:{display:'Viewer',color:'role-viewer',icon:'eye'}};
+let users=[{id:1,fullName:'Dr. Kwame Asante',username:'k.asante',email:'k.asante@mediflow.local',role:'doctor',department:'OPD',license:'GMC-10234-2019',phone:'0244-111-222',isActive:true,lastLogin:'2026-06-13 08:30'},{id:2,fullName:'Ama Mensah',username:'a.mensah',email:'a.mensah@mediflow.local',role:'nurse',department:'Nursing',license:'NMC-5567-2020',phone:'0244-333-444',isActive:true,lastLogin:'2026-06-13 09:15'},{id:3,fullName:'Kofi Boateng',username:'k.boateng',email:'k.boateng@mediflow.local',role:'pharmacist',department:'Pharmacy',license:'PHC-8890-2018',phone:'0244-555-666',isActive:true,lastLogin:'2026-06-12 16:45'},{id:4,fullName:'Abena Owusu',username:'a.owusu',email:'a.owusu@mediflow.local',role:'lab_technician',department:'Laboratory',license:'MLT-2234-2021',phone:'0244-777-888',isActive:true,lastLogin:'2026-06-13 07:50'},{id:5,fullName:'Yaw Darko',username:'y.darko',email:'y.darko@mediflow.local',role:'receptionist',department:'OPD',license:null,phone:'0244-999-000',isActive:true,lastLogin:'2026-06-13 08:00'},{id:6,fullName:'Efua Addo',username:'e.addo',email:'e.addo@mediflow.local',role:'billing_staff',department:'Billing',license:null,phone:'0244-123-456',isActive:true,lastLogin:'2026-06-12 14:20'},{id:7,fullName:'System Admin',username:'admin',email:'admin@mediflow.local',role:'super_admin',department:'Administration',license:null,phone:'0302-000-000',isActive:true,lastLogin:'2026-06-13 10:00'},{id:8,fullName:'Dr. Sarah Osei',username:'s.osei',email:'s.osei@mediflow.local',role:'doctor',department:'OPD',license:'GMC-4456-2017',phone:'0244-234-567',isActive:false,lastLogin:'2026-05-20 11:30'},{id:9,fullName:'Ibrahim Sule',username:'i.sule',email:'i.sule@mediflow.local',role:'inventory_manager',department:'Pharmacy',license:null,phone:'0244-345-678',isActive:true,lastLogin:'2026-06-11 09:00'},{id:10,fullName:'Grace Ankrah',username:'g.ankrah',email:'g.ankrah@mediflow.local',role:'viewer',department:'Administration',license:null,phone:'0244-456-789',isActive:true,lastLogin:'2026-06-10 13:15'}];
+const permissionsMatrix=[{module:'Dashboard',super_admin:'full',admin:'full',doctor:'own',nurse:'own',pharmacist:'own',lab_technician:'own',receptionist:'own',billing_staff:'own'},{module:'Patient Registration',super_admin:'full',admin:'full',doctor:'view',nurse:'view',pharmacist:'view',lab_technician:'view',receptionist:'full',billing_staff:'view'},{module:'Patient Records',super_admin:'full',admin:'full',doctor:'full',nurse:'edit',pharmacist:'view',lab_technician:'view',receptionist:'view',billing_staff:'view'},{module:'Appointments',super_admin:'full',admin:'full',doctor:'own',nurse:'own',pharmacist:'none',lab_technician:'none',receptionist:'full',billing_staff:'none'},{module:'OPD Consultation',super_admin:'full',admin:'view',doctor:'full',nurse:'assist',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'Prescriptions',super_admin:'full',admin:'view',doctor:'full',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'Lab Orders',super_admin:'full',admin:'view',doctor:'order',nurse:'order',pharmacist:'none',lab_technician:'full',receptionist:'none',billing_staff:'none'},{module:'Lab Results',super_admin:'full',admin:'view',doctor:'view',nurse:'view',pharmacist:'none',lab_technician:'full',receptionist:'none',billing_staff:'none'},{module:'Pharmacy Dispense',super_admin:'full',admin:'view',doctor:'view',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'Billing / Invoices',super_admin:'full',admin:'full',doctor:'view',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'view',billing_staff:'full'},{module:'Insurance Claims',super_admin:'full',admin:'full',doctor:'view',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'view',billing_staff:'full'},{module:'Inventory',super_admin:'full',admin:'full',doctor:'view',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'Sick Leave Certs',super_admin:'full',admin:'view',doctor:'full',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'print',billing_staff:'none'},{module:'Referral Letters',super_admin:'full',admin:'view',doctor:'full',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'print',billing_staff:'none'},{module:'Reports / Analytics',super_admin:'full',admin:'full',doctor:'dept',nurse:'dept',pharmacist:'dept',lab_technician:'dept',receptionist:'own',billing_staff:'own'},{module:'User Management',super_admin:'full',admin:'full',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'System Settings',super_admin:'full',admin:'full',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},{module:'Audit Logs',super_admin:'full',admin:'view',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'}];
+const auditLogs=[{timestamp:'2026-06-13 10:05:22',user:'admin',action:'USER_CREATED',module:'Users',ip:'192.168.1.45',success:true},{timestamp:'2026-06-13 09:48:11',user:'k.asante',action:'PRESCRIPTION_CREATED',module:'Prescriptions',ip:'192.168.1.12',success:true},{timestamp:'2026-06-13 09:30:00',user:'a.owusu',action:'LAB_RESULT_PUBLISHED',module:'Laboratory',ip:'192.168.1.18',success:true},{timestamp:'2026-06-13 09:15:33',user:'a.mensah',action:'VITALS_RECORDED',module:'Patients',ip:'192.168.1.15',success:true},{timestamp:'2026-06-13 08:55:07',user:'y.darko',action:'PATIENT_REGISTERED',module:'Patients',ip:'192.168.1.22',success:true},{timestamp:'2026-06-13 08:42:19',user:'k.boateng',action:'PRESCRIPTION_DISPENSED',module:'Pharmacy',ip:'192.168.1.14',success:true},{timestamp:'2026-06-13 08:30:00',user:'k.asante',action:'LOGIN',module:'Auth',ip:'192.168.1.12',success:true},{timestamp:'2026-06-12 16:45:00',user:'k.boateng',action:'LOGOUT',module:'Auth',ip:'192.168.1.14',success:true},{timestamp:'2026-06-12 14:20:00',user:'e.addo',action:'INVOICE_GENERATED',module:'Billing',ip:'192.168.1.20',success:true},{timestamp:'2026-06-12 11:00:00',user:'admin',action:'SETTINGS_CHANGED',module:'Settings',ip:'192.168.1.45',success:true}];
+const allCurrencies={GHS:{code:'GHS',name:'Ghana Cedi',symbol:'GH\u20B5'},NGN:{code:'NGN',name:'Nigerian Naira',symbol:'\u20A6'},KES:{code:'KES',name:'Kenyan Shilling',symbol:'KSh'},ZAR:{code:'ZAR',name:'South African Rand',symbol:'R'},UGX:{code:'UGX',name:'Ugandan Shilling',symbol:'USh'},TZS:{code:'TZS',name:'Tanzanian Shilling',symbol:'TSh'},USD:{code:'USD',name:'US Dollar',symbol:'$'},EUR:{code:'EUR',name:'Euro',symbol:'\u20AC'},GBP:{code:'GBP',name:'British Pound',symbol:'\u00A3'},INR:{code:'INR',name:'Indian Rupee',symbol:'\u20B9'}};
+let defaultCurrency='KES';
+let additionalCurrenciesList=[];
+let exchangeRates={USD:0.0077,EUR:0.0071,GBP:0.0059};
+let currentPage=1;
+const pageSize=7;
+let editingUserId=null;
+let deletingUserId=null;
+let filteredUsers=[...users];
 
-// ==================== DATA ====================
-const roleConfig = {
-    super_admin: { display: 'Super Admin', color: 'role-super_admin', icon: 'shield' },
-    admin: { display: 'Admin', color: 'role-admin', icon: 'settings' },
-    doctor: { display: 'Doctor', color: 'role-doctor', icon: 'stethoscope' },
-    nurse: { display: 'Nurse', color: 'role-nurse', icon: 'heart' },
-    pharmacist: { display: 'Pharmacist', color: 'role-pharmacist', icon: 'pill' },
-    lab_technician: { display: 'Lab Tech', color: 'role-lab_technician', icon: 'flask-conical' },
-    receptionist: { display: 'Receptionist', color: 'role-receptionist', icon: 'calendar' },
-    billing_staff: { display: 'Billing', color: 'role-billing_staff', icon: 'credit-card' },
-    inventory_manager: { display: 'Inventory', color: 'role-inventory_manager', icon: 'package' },
-    viewer: { display: 'Viewer', color: 'role-viewer', icon: 'eye' }
+document.addEventListener('DOMContentLoaded',function(){lucide.createIcons();updateStats();renderUsersTable();renderPermissionsTable();renderAuditLog();renderCurrencyList();renderAdditionalCurrencies();renderExchangeRates();updateFormatPreview();setupFacilityPreview()});
+
+function switchTab(tabName,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));btn.classList.add('active');document.getElementById('tab-'+tabName).classList.remove('hidden');lucide.createIcons()}
+
+function showToast(message,type){const toast=document.getElementById('toast');toast.textContent=message;toast.style.background=type==='error'?'#dc2626':'#1e293b';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)}
+
+function saveHospitalInfo(){showToast('Hospital information saved successfully')}
+function resetForm(){document.getElementById('hospitalName').value='MediFlow Hospital';document.getElementById('department').value='Outpatient Department (OPD)';document.getElementById('phone').value='0302-000-000';document.getElementById('email').value='info@mediflow.local';document.getElementById('address').value='123 Hospital Road, Accra, Ghana';showToast('Form reset to defaults')}
+function clearCache(){showToast('Cache cleared successfully')}
+
+function setupFacilityPreview(){['facilityName','facilityTagline','facilityAddress','facilityPhone','facilityEmail'].forEach(id=>{document.getElementById(id).addEventListener('input',updateFacilityPreview)})}
+function updateFacilityPreview(){const name=document.getElementById('facilityName').value||'MediFlow Hospital';const tagline=document.getElementById('facilityTagline').value||'Excellence in Healthcare';const address=document.getElementById('facilityAddress').value||'123 Hospital Road, Nairobi, Kenya';const phone=document.getElementById('facilityPhone').value||'+254 700 000 000';const email=document.getElementById('facilityEmail').value||'info@mediflow.local';document.getElementById('previewName').textContent=name;document.getElementById('previewTagline').textContent=tagline;document.getElementById('previewAddress').textContent=address;document.getElementById('previewContact').textContent=phone+' | '+email;document.getElementById('previewReceiptName').textContent=name;const addrParts=address.split(',');document.getElementById('previewReceiptAddress').textContent=(addrParts[0]||'')+', '+(addrParts[1]||'')+', '+(addrParts[2]||'');document.getElementById('previewReceiptPhone').textContent='Tel: '+phone}
+function updateCountryPreview(){showToast('Country updated')}
+function handleLogoUpload(event){const file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){showToast('File too large. Max 2MB.','error');return}const reader=new FileReader();reader.onload=function(e){document.getElementById('logoPreview').src=e.target.result;document.getElementById('logoPreview').style.display='block';document.getElementById('logoPlaceholder').style.display='none';document.getElementById('logoUploadArea').classList.add('has-image');document.getElementById('removeLogoBtn').style.display='block';document.getElementById('previewLogo').src=e.target.result;document.getElementById('previewReceiptLogo').src=e.target.result;showToast('Logo uploaded successfully')};reader.readAsDataURL(file)}
+function removeLogo(){document.getElementById('logoPreview').src='';document.getElementById('logoPreview').style.display='none';document.getElementById('logoPlaceholder').style.display='block';document.getElementById('logoUploadArea').classList.remove('has-image');document.getElementById('removeLogoBtn').style.display='none';document.getElementById('previewLogo').src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%233b82f6' width='64' height='64' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";document.getElementById('previewReceiptLogo').src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%233b82f6' width='40' height='40' rx='6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";showToast('Logo removed')}
+function handleHeaderUpload(event){const file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){showToast('File too large. Max 2MB.','error');return}const reader=new FileReader();reader.onload=function(e){document.getElementById('headerPreview').src=e.target.result;document.getElementById('headerPreview').style.display='block';document.getElementById('headerPlaceholder').style.display='none';document.getElementById('headerUploadArea').classList.add('has-image');document.getElementById('removeHeaderBtn').style.display='block';showToast('Header banner uploaded')};reader.readAsDataURL(file)}
+function removeHeader(){document.getElementById('headerPreview').src='';document.getElementById('headerPreview').style.display='none';document.getElementById('headerPlaceholder').style.display='block';document.getElementById('headerUploadArea').classList.remove('has-image');document.getElementById('removeHeaderBtn').style.display='none';showToast('Header banner removed')}
+function saveFacility(){showToast('Facility settings saved successfully')}
+function resetFacility(){document.getElementById('facilityName').value='MediFlow Hospital';document.getElementById('facilityTagline').value='Excellence in Healthcare';document.getElementById('facilityRegNo').value='HOSP-KE-2024-001';document.getElementById('facilityTaxId').value='VAT-KE-987654321';document.getElementById('facilityAddress').value='123 Hospital Road, Westlands, Nairobi, Kenya';document.getElementById('facilityCity').value='Nairobi';document.getElementById('facilityCountry').value='KE';document.getElementById('facilityPhone').value='+254 700 000 000';document.getElementById('facilityEmail').value='info@mediflow.local';document.getElementById('facilityWebsite').value='www.mediflow.local';document.getElementById('facilityEmergency').value='+254 700 999 999';updateFacilityPreview();showToast('Facility settings reset to default')}
+
+function renderCurrencyList(){const container=document.getElementById('currencyList');container.innerHTML=Object.values(allCurrencies).map(c=>{const isActive=c.code===defaultCurrency;return '<div class="currency-row '+(isActive?'active':'')+'" onclick="setDefaultCurrency(\''+c.code+'\')">'+'<div class="currency-info"><span class="currency-code">'+c.code+'</span><span class="currency-name">'+c.name+'</span></div>'+'<div class="flex items-center gap-3"><span class="currency-symbol">'+c.symbol+'</span>'+(isActive?'<span class="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded">DEFAULT</span>':'<span class="text-xs text-gray-400">Click to set default</span>')+'</div></div>'}).join('')}
+function setDefaultCurrency(code){defaultCurrency=code;renderCurrencyList();updateFormatPreview();updateReceiptPreview();showToast('Default currency set to '+allCurrencies[code].name)}
+function updateFormatPreview(){const symbol=allCurrencies[defaultCurrency].symbol;const position=document.getElementById('symbolPosition').value;const decSep=document.getElementById('decimalSeparator').value;const thouSep=document.getElementById('thousandsSeparator').value;const places=parseInt(document.getElementById('decimalPlaces').value);let amount='1234.56';let parts=amount.split('.');let intPart=parts[0];let decPart=parts[1]||'';intPart=intPart.replace(/\B(?=(\d{3})+(?!\d))/g,thouSep===' '?' ':thouSep);if(places===0){decPart=''}else if(places===3){decPart=(decPart+'0').substring(0,3)}else{decPart=decPart.substring(0,2)}let formatted=decPart?intPart+decSep+decPart:intPart;let preview=position==='before'?symbol+' '+formatted:formatted+' '+symbol;document.getElementById('formatPreview').textContent=preview}
+function updateReceiptPreview(){const symbol=allCurrencies[defaultCurrency].symbol;for(let i=1;i<=6;i++){const el=document.getElementById('receiptCurrency'+i);if(el)el.textContent=symbol;const el2=document.getElementById('previewCurrencySymbol'+i);if(el2)el2.textContent=symbol}}
+function renderAdditionalCurrencies(){const container=document.getElementById('additionalCurrencies');if(additionalCurrenciesList.length===0){container.innerHTML='<p class="text-sm text-gray-400 italic">No additional currencies configured</p>';return}container.innerHTML=additionalCurrenciesList.map(code=>{const c=allCurrencies[code];if(!c)return'';return '<div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg border border-gray-100">'+'<div class="flex items-center gap-3"><span class="font-bold text-gray-900">'+c.code+'</span><span class="text-gray-600">'+c.name+'</span><span class="text-blue-600 font-semibold">'+c.symbol+'</span></div>'+'<div class="flex items-center gap-2"><span class="text-xs text-gray-500">1 '+defaultCurrency+' =</span><input type="number" class="rate-input" value="'+(exchangeRates[code]||1)+'" step="0.01" onchange="updateRate(\''+code+'\',this.value)"><span class="text-xs text-gray-500">'+c.code+'</span><button class="p-1 rounded hover:bg-red-50 text-red-500" onclick="removeCurrency(\''+code+'\')"><i data-lucide="x" class="w-4 h-4"></i></button></div></div>'}).join('');lucide.createIcons()}
+function updateRate(code,value){exchangeRates[code]=parseFloat(value);showToast('Exchange rate updated for '+code)}
+function addCurrency(){const select=document.getElementById('addCurrencySelect');const code=select.value;if(!code){showToast('Please select a currency','error');return}if(code===defaultCurrency){showToast('Currency is already the default','error');return}if(additionalCurrenciesList.includes(code)){showToast('Currency already added','error');return}additionalCurrenciesList.push(code);if(!exchangeRates[code])exchangeRates[code]=1.0;renderAdditionalCurrencies();renderExchangeRates();select.value='';showToast(allCurrencies[code].name+' added as accepted currency')}
+function removeCurrency(code){additionalCurrenciesList=additionalCurrenciesList.filter(c=>c!==code);renderAdditionalCurrencies();renderExchangeRates();showToast(allCurrencies[code].name+' removed')}
+function renderExchangeRates(){const container=document.getElementById('exchangeRates');const all=[defaultCurrency,...additionalCurrenciesList];container.innerHTML=all.map(code=>{const c=allCurrencies[code];if(!c)return'';const rate=code===defaultCurrency?1.0:(exchangeRates[code]||1.0);return '<div class="flex justify-between items-center py-1.5 border-b border-gray-100"><span class="font-medium text-gray-700">1 '+defaultCurrency+'</span><span class="text-gray-900 font-semibold">= '+rate.toFixed(2)+' '+c.code+' ('+c.symbol+')</span></div>'}).join('')}
+function saveCurrency(){showToast('Currency settings saved successfully')}
+function resetCurrency(){defaultCurrency='KES';additionalCurrenciesList=[];exchangeRates={USD:0.0077,EUR:0.0071,GBP:0.0059};document.getElementById('symbolPosition').value='before';document.getElementById('decimalSeparator').value='.';document.getElementById('thousandsSeparator').value=',';document.getElementById('decimalPlaces').value='2';renderCurrencyList();renderAdditionalCurrencies();renderExchangeRates();updateFormatPreview();showToast('Currency settings reset to KES default')}
+function updateStats(){document.getElementById('totalUsers').textContent=users.length;document.getElementById('activeUsers').textContent=users.filter(u=>u.isActive).length;document.getElementById('doctorCount').textContent=users.filter(u=>u.role==='doctor').length;document.getElementById('labCount').textContent=users.filter(u=>u.role==='lab_technician').length;document.getElementById('receptionCount').textContent=users.filter(u=>u.role==='receptionist').length}
+function filterUsers(){const search=document.getElementById('userSearch').value.toLowerCase();const role=document.getElementById('roleFilter').value;const status=document.getElementById('statusFilter').value;filteredUsers=users.filter(u=>{const matchSearch=!search||u.fullName.toLowerCase().includes(search)||u.username.toLowerCase().includes(search)||u.email.toLowerCase().includes(search);const matchRole=!role||u.role===role;const matchStatus=!status||(status==='active'?u.isActive:!u.isActive);return matchSearch&&matchRole&&matchStatus});currentPage=1;renderUsersTable()}
+function renderUsersTable(){const tbody=document.getElementById('usersTableBody');const start=(currentPage-1)*pageSize;const pageUsers=filteredUsers.slice(start,start+pageSize);tbody.innerHTML=pageUsers.map(user=>{const role=roleConfig[user.role];return '<tr class="table-row border-b border-gray-50 transition-colors">'+'<td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm">'+user.fullName.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div><div><p class="font-medium text-sm text-gray-900">'+user.fullName+'</p><p class="text-xs text-gray-500">'+user.email+'</p></div></div></td>'+'<td class="px-5 py-4"><span class="role-badge '+role.color+'"><i data-lucide="'+role.icon+'" class="w-3 h-3"></i>'+role.display+'</span></td>'+'<td class="px-5 py-4 text-sm text-gray-600">'+(user.department||'-')+'</td>'+'<td class="px-5 py-4 text-sm text-gray-600 font-mono">'+(user.license||'-')+'</td>'+'<td class="px-5 py-4 text-sm text-gray-500">'+(user.lastLogin||'Never')+'</td>'+'<td class="px-5 py-4"><div class="flex items-center gap-2"><span class="status-dot '+(user.isActive?'status-active':'status-inactive')+'"></span><span class="text-sm '+(user.isActive?'text-green-600':'text-red-500')+'">'+(user.isActive?'Active':'Inactive')+'</span></div></td>'+'<td class="px-5 py-4 text-right"><div class="relative inline-block"><button class="p-1.5 rounded-lg hover:bg-gray-100" onclick="toggleDropdown('+user.id+')">'+'<i data-lucide="more-vertical" class="w-4 h-4 text-gray-500"></i></button>'+'<div class="dropdown-menu" id="dropdown-'+user.id+'">'+'<div class="dropdown-item" onclick="editUser('+user.id+')">'+'<i data-lucide="pencil" class="w-4 h-4"></i>Edit</div>'+'<div class="dropdown-item" onclick="resetPassword('+user.id+')">'+'<i data-lucide="key" class="w-4 h-4"></i>Reset Password</div>'+'<div class="dropdown-item" onclick="viewActivity('+user.id+')">'+'<i data-lucide="activity" class="w-4 h-4"></i>Activity Log</div>'+'<div class="border-t border-gray-100 my-1"></div>'+'<div class="dropdown-item danger" onclick="confirmDeactivate('+user.id+')">'+'<i data-lucide="'+(user.isActive?'user-x':'user-check')+'" class="w-4 h-4"></i>'+(user.isActive?'Deactivate':'Activate')+'</div>'+'</div></div></td></tr>'}).join('');document.getElementById('paginationInfo').textContent='Showing '+(start+1)+'-'+Math.min(start+pageSize,filteredUsers.length)+' of '+filteredUsers.length+' users';document.getElementById('prevBtn').disabled=currentPage===1;document.getElementById('nextBtn').disabled=start+pageSize>=filteredUsers.length;document.getElementById('prevBtn').style.opacity=currentPage===1?'0.5':'1';document.getElementById('nextBtn').style.opacity=start+pageSize>=filteredUsers.length?'0.5':'1';lucide.createIcons()}
+function prevPage(){if(currentPage>1){currentPage--;renderUsersTable()}}
+function nextPage(){if((currentPage-1)*pageSize+pageSize<filteredUsers.length){currentPage++;renderUsersTable()}}
+function toggleDropdown(userId){document.querySelectorAll('.dropdown-menu').forEach(d=>d.classList.remove('show'));document.getElementById('dropdown-'+userId).classList.toggle('show')}
+document.addEventListener('click',function(e){if(!e.target.closest('.dropdown-menu')&&!e.target.closest('button')){document.querySelectorAll('.dropdown-menu').forEach(d=>d.classList.remove('show'))}});
+function openUserModal(){editingUserId=null;document.getElementById('modalTitle').textContent='Add New User';document.getElementById('passwordHint').textContent='';document.getElementById('userPassword').placeholder='Min 8 chars, 1 uppercase, 1 number, 1 special';document.getElementById('userFullName').value='';document.getElementById('userUsername').value='';document.getElementById('userEmail').value='';document.getElementById('userPhone').value='';document.getElementById('userRole').value='';document.getElementById('userDepartment').value='';document.getElementById('userLicense').value='';document.getElementById('userPassword').value='';document.getElementById('userActive').checked=true;document.getElementById('licenseField').style.display='none';document.getElementById('userModal').classList.add('show');lucide.createIcons()}
+function closeUserModal(){document.getElementById('userModal').classList.remove('show')}
+function toggleLicenseField(){const role=document.getElementById('userRole').value;const needsLicense=['doctor','pharmacist','lab_technician','nurse'].includes(role);document.getElementById('licenseField').style.display=needsLicense?'block':'none'}
+function editUser(id){const user=users.find(u=>u.id===id);if(!user)return;editingUserId=id;document.getElementById('modalTitle').textContent='Edit User';document.getElementById('passwordHint').textContent='(leave blank to keep current)';document.getElementById('userFullName').value=user.fullName;document.getElementById('userUsername').value=user.username;document.getElementById('userEmail').value=user.email;document.getElementById('userPhone').value=user.phone||'';document.getElementById('userRole').value=user.role;document.getElementById('userDepartment').value=user.department||'';document.getElementById('userLicense').value=user.license||'';document.getElementById('userPassword').value='';document.getElementById('userActive').checked=user.isActive;toggleLicenseField();document.getElementById('userModal').classList.add('show');lucide.createIcons()}
+function saveUser(){const fullName=document.getElementById('userFullName').value.trim();const username=document.getElementById('userUsername').value.trim();const email=document.getElementById('userEmail').value.trim();const role=document.getElementById('userRole').value;const department=document.getElementById('userDepartment').value;const license=document.getElementById('userLicense').value.trim()||null;const phone=document.getElementById('userPhone').value.trim()||null;const password=document.getElementById('userPassword').value;const isActive=document.getElementById('userActive').checked;if(!fullName||!username||!email||!role){showToast('Please fill in all required fields','error');return}if(!editingUserId&&!password){showToast('Password is required for new users','error');return}if(editingUserId){const user=users.find(u=>u.id===editingUserId);user.fullName=fullName;user.username=username;user.email=email;user.role=role;user.department=department||null;user.license=license;user.phone=phone;user.isActive=isActive;showToast('User updated successfully')}else{const newId=Math.max(...users.map(u=>u.id))+1;users.push({id:newId,fullName,username,email,role,department:department||null,license,phone,isActive,lastLogin:null});showToast('User created successfully')}closeUserModal();filterUsers();updateStats()}
+function confirmDeactivate(id){const user=users.find(u=>u.id===id);if(!user)return;deletingUserId=id;document.getElementById('deleteUserName').textContent=user.fullName;document.getElementById('deleteModal').classList.add('show');lucide.createIcons()}
+function closeDeleteModal(){document.getElementById('deleteModal').classList.remove('show')}
+function confirmDelete(){const user=users.find(u=>u.id===deletingUserId);if(user){user.isActive=!user.isActive;showToast(user.isActive?'User activated':'User deactivated')}closeDeleteModal();filterUsers();updateStats()}
+function resetPassword(id){const user=users.find(u=>u.id===id);showToast('Password reset link sent to '+user.email)}
+function viewActivity(id){const user=users.find(u=>u.id===id);showToast('Viewing activity log for '+user.fullName)}
+function exportUsers(){const csv=['Name,Username,Email,Role,Department,License,Phone,Status,Last Login'];users.forEach(u=>{csv.push(u.fullName+','+u.username+','+u.email+','+roleConfig[u.role].display+','+(u.department||'')+','+(u.license||'')+','+(u.phone||'')+','+(u.isActive?'Active':'Inactive')+','+(u.lastLogin||'Never'))});const blob=new Blob([csv.join('\n')],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='mediflow-users.csv';a.click();URL.revokeObjectURL(url);showToast('Users exported to CSV')}
+function renderPermissionsTable(){const tbody=document.getElementById('permissionsTableBody');const permColors={full:'bg-green-500',own:'bg-yellow-400',edit:'bg-yellow-400',order:'bg-yellow-400',assist:'bg-yellow-400',dept:'bg-yellow-400',view:'bg-blue-400',print:'bg-blue-400',none:'bg-gray-300'};const permLabels={full:'Full',own:'Own',edit:'Edit',order:'Order',assist:'Assist',dept:'Dept',view:'View',print:'Print',none:'None'};tbody.innerHTML=permissionsMatrix.map(row=>{return '<tr class="border-b border-gray-50 hover:bg-gray-50">'+'<td class="py-2.5 px-4 font-medium text-gray-700 sticky left-0 bg-white">'+row.module+'</td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.super_admin]+'" title="'+permLabels[row.super_admin]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.admin]+'" title="'+permLabels[row.admin]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.doctor]+'" title="'+permLabels[row.doctor]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.nurse]+'" title="'+permLabels[row.nurse]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.pharmacist]+'" title="'+permLabels[row.pharmacist]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.lab_technician]+'" title="'+permLabels[row.lab_technician]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.receptionist]+'" title="'+permLabels[row.receptionist]+'"></span></td>'+'<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.billing_staff]+'" title="'+permLabels[row.billing_staff]+'"></span></td>'+'</tr>'}).join('')}
+function renderAuditLog(){const tbody=document.getElementById('auditLogBody');tbody.innerHTML=auditLogs.map(log=>{return '<tr class="border-b border-gray-50 hover:bg-gray-50">'+'<td class="py-2 px-3 text-gray-600 font-mono text-xs">'+log.timestamp+'</td>'+'<td class="py-2 px-3 text-gray-700 font-medium">'+log.user+'</td>'+'<td class="py-2 px-3"><span class="px-2 py-0.5 rounded text-xs font-medium '+(log.success?'bg-green-100 text-green-700':'bg-red-100 text-red-700')+'">'+log.action+'</span></td>'+'<td class="py-2 px-3 text-gray-600">'+log.module+'</td>'+'<td class="py-2 px-3 text-gray-500 font-mono text-xs">'+log.ip+'</td>'+'<td class="py-2 px-3"><span class="flex items-center gap-1 text-xs '+(log.success?'text-green-600':'text-red-500')+'"><span class="w-2 h-2 rounded-full '+(log.success?'bg-green-500':'bg-red-500')+'"></span>'+(log.success?'Success':'Failed')+'</span></td>'+'</tr>'}).join('')}
+</script>
+</body>
+</html>
+
+const roleConfig={
+    super_admin:{display:'Super Admin',color:'role-super_admin',icon:'shield'},
+    admin:{display:'Admin',color:'role-admin',icon:'settings'},
+    doctor:{display:'Doctor',color:'role-doctor',icon:'stethoscope'},
+    nurse:{display:'Nurse',color:'role-nurse',icon:'heart'},
+    pharmacist:{display:'Pharmacist',color:'role-pharmacist',icon:'pill'},
+    lab_technician:{display:'Lab Tech',color:'role-lab_technician',icon:'flask-conical'},
+    receptionist:{display:'Receptionist',color:'role-receptionist',icon:'calendar'},
+    billing_staff:{display:'Billing',color:'role-billing_staff',icon:'credit-card'},
+    inventory_manager:{display:'Inventory',color:'role-inventory_manager',icon:'package'},
+    viewer:{display:'Viewer',color:'role-viewer',icon:'eye'}
 };
 
-let users = [
-    { id: 1, fullName: 'Dr. Kwame Asante', username: 'k.asante', email: 'k.asante@mediflow.local', role: 'doctor', department: 'OPD', license: 'GMC-10234-2019', phone: '0244-111-222', isActive: true, lastLogin: '2026-06-13 08:30' },
-    { id: 2, fullName: 'Ama Mensah', username: 'a.mensah', email: 'a.mensah@mediflow.local', role: 'nurse', department: 'Nursing', license: 'NMC-5567-2020', phone: '0244-333-444', isActive: true, lastLogin: '2026-06-13 09:15' },
-    { id: 3, fullName: 'Kofi Boateng', username: 'k.boateng', email: 'k.boateng@mediflow.local', role: 'pharmacist', department: 'Pharmacy', license: 'PHC-8890-2018', phone: '0244-555-666', isActive: true, lastLogin: '2026-06-12 16:45' },
-    { id: 4, fullName: 'Abena Owusu', username: 'a.owusu', email: 'a.owusu@mediflow.local', role: 'lab_technician', department: 'Laboratory', license: 'MLT-2234-2021', phone: '0244-777-888', isActive: true, lastLogin: '2026-06-13 07:50' },
-    { id: 5, fullName: 'Yaw Darko', username: 'y.darko', email: 'y.darko@mediflow.local', role: 'receptionist', department: 'OPD', license: null, phone: '0244-999-000', isActive: true, lastLogin: '2026-06-13 08:00' },
-    { id: 6, fullName: 'Efua Addo', username: 'e.addo', email: 'e.addo@mediflow.local', role: 'billing_staff', department: 'Billing', license: null, phone: '0244-123-456', isActive: true, lastLogin: '2026-06-12 14:20' },
-    { id: 7, fullName: 'System Admin', username: 'admin', email: 'admin@mediflow.local', role: 'super_admin', department: 'Administration', license: null, phone: '0302-000-000', isActive: true, lastLogin: '2026-06-13 10:00' },
-    { id: 8, fullName: 'Dr. Sarah Osei', username: 's.osei', email: 's.osei@mediflow.local', role: 'doctor', department: 'OPD', license: 'GMC-4456-2017', phone: '0244-234-567', isActive: false, lastLogin: '2026-05-20 11:30' },
-    { id: 9, fullName: 'Ibrahim Sule', username: 'i.sule', email: 'i.sule@mediflow.local', role: 'inventory_manager', department: 'Pharmacy', license: null, phone: '0244-345-678', isActive: true, lastLogin: '2026-06-11 09:00' },
-    { id: 10, fullName: 'Grace Ankrah', username: 'g.ankrah', email: 'g.ankrah@mediflow.local', role: 'viewer', department: 'Administration', license: null, phone: '0244-456-789', isActive: true, lastLogin: '2026-06-10 13:15' }
+let users=[
+    {id:1,fullName:'Dr. James Mwangi',username:'j.mwangi',email:'j.mwangi@mediflow.local',role:'doctor',department:'OPD',license:'KMPDB-10234-2019',phone:'0712-111-222',isActive:true,lastLogin:'2026-06-13 08:30'},
+    {id:2,fullName:'Grace Wanjiku',username:'g.wanjiku',email:'g.wanjiku@mediflow.local',role:'nurse',department:'Nursing',license:'NCK-5567-2020',phone:'0712-333-444',isActive:true,lastLogin:'2026-06-13 09:15'},
+    {id:3,fullName:'Peter Ochieng',username:'p.ochieng',email:'p.ochieng@mediflow.local',role:'pharmacist',department:'Pharmacy',license:'PBP-8890-2018',phone:'0712-555-666',isActive:true,lastLogin:'2026-06-12 16:45'},
+    {id:4,fullName:'Mary Akinyi',username:'m.akinyi',email:'m.akinyi@mediflow.local',role:'lab_technician',department:'Laboratory',license:'KMLTTB-2234-2021',phone:'0712-777-888',isActive:true,lastLogin:'2026-06-13 07:50'},
+    {id:5,fullName:'John Kamau',username:'j.kamau',email:'j.kamau@mediflow.local',role:'receptionist',department:'OPD',license:null,phone:'0712-999-000',isActive:true,lastLogin:'2026-06-13 08:00'},
+    {id:6,fullName:'Faith Njeri',username:'f.njeri',email:'f.njeri@mediflow.local',role:'billing_staff',department:'Billing',license:null,phone:'0712-123-456',isActive:true,lastLogin:'2026-06-12 14:20'},
+    {id:7,fullName:'System Admin',username:'admin',email:'admin@mediflow.local',role:'super_admin',department:'Administration',license:null,phone:'020-000-0000',isActive:true,lastLogin:'2026-06-13 10:00'},
+    {id:8,fullName:'Dr. Sarah Achieng',username:'s.achieng',email:'s.achieng@mediflow.local',role:'doctor',department:'OPD',license:'KMPDB-4456-2017',phone:'0712-234-567',isActive:false,lastLogin:'2026-05-20 11:30'},
+    {id:9,fullName:'David Mutua',username:'d.mutua',email:'d.mutua@mediflow.local',role:'inventory_manager',department:'Pharmacy',license:null,phone:'0712-345-678',isActive:true,lastLogin:'2026-06-11 09:00'},
+    {id:10,fullName:'Lucy Wangari',username:'l.wangari',email:'l.wangari@mediflow.local',role:'viewer',department:'Administration',license:null,phone:'0712-456-789',isActive:true,lastLogin:'2026-06-10 13:15'}
 ];
 
-const permissionsMatrix = [
-    { module: 'Dashboard', super_admin: 'full', admin: 'full', doctor: 'own', nurse: 'own', pharmacist: 'own', lab_technician: 'own', receptionist: 'own', billing_staff: 'own' },
-    { module: 'Patient Registration', super_admin: 'full', admin: 'full', doctor: 'view', nurse: 'view', pharmacist: 'view', lab_technician: 'view', receptionist: 'full', billing_staff: 'view' },
-    { module: 'Patient Records', super_admin: 'full', admin: 'full', doctor: 'full', nurse: 'edit', pharmacist: 'view', lab_technician: 'view', receptionist: 'view', billing_staff: 'view' },
-    { module: 'Appointments', super_admin: 'full', admin: 'full', doctor: 'own', nurse: 'own', pharmacist: 'none', lab_technician: 'none', receptionist: 'full', billing_staff: 'none' },
-    { module: 'OPD Consultation', super_admin: 'full', admin: 'view', doctor: 'full', nurse: 'assist', pharmacist: 'none', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Prescriptions', super_admin: 'full', admin: 'view', doctor: 'full', nurse: 'view', pharmacist: 'full', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Lab Orders', super_admin: 'full', admin: 'view', doctor: 'order', nurse: 'order', pharmacist: 'none', lab_technician: 'full', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Lab Results', super_admin: 'full', admin: 'view', doctor: 'view', nurse: 'view', pharmacist: 'none', lab_technician: 'full', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Pharmacy Dispense', super_admin: 'full', admin: 'view', doctor: 'view', nurse: 'view', pharmacist: 'full', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Billing / Invoices', super_admin: 'full', admin: 'full', doctor: 'view', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'view', billing_staff: 'full' },
-    { module: 'Insurance Claims', super_admin: 'full', admin: 'full', doctor: 'view', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'view', billing_staff: 'full' },
-    { module: 'Inventory', super_admin: 'full', admin: 'full', doctor: 'view', nurse: 'view', pharmacist: 'full', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Sick Leave Certs', super_admin: 'full', admin: 'view', doctor: 'full', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'print', billing_staff: 'none' },
-    { module: 'Referral Letters', super_admin: 'full', admin: 'view', doctor: 'full', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'print', billing_staff: 'none' },
-    { module: 'Reports / Analytics', super_admin: 'full', admin: 'full', doctor: 'dept', nurse: 'dept', pharmacist: 'dept', lab_technician: 'dept', receptionist: 'own', billing_staff: 'own' },
-    { module: 'User Management', super_admin: 'full', admin: 'full', doctor: 'none', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'System Settings', super_admin: 'full', admin: 'full', doctor: 'none', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' },
-    { module: 'Audit Logs', super_admin: 'full', admin: 'view', doctor: 'none', nurse: 'none', pharmacist: 'none', lab_technician: 'none', receptionist: 'none', billing_staff: 'none' }
+const permissionsMatrix=[
+    {module:'Dashboard',super_admin:'full',admin:'full',doctor:'own',nurse:'own',pharmacist:'own',lab_technician:'own',receptionist:'own',billing_staff:'own'},
+    {module:'Patient Registration',super_admin:'full',admin:'full',doctor:'view',nurse:'view',pharmacist:'view',lab_technician:'view',receptionist:'full',billing_staff:'view'},
+    {module:'Patient Records',super_admin:'full',admin:'full',doctor:'full',nurse:'edit',pharmacist:'view',lab_technician:'view',receptionist:'view',billing_staff:'view'},
+    {module:'Appointments',super_admin:'full',admin:'full',doctor:'own',nurse:'own',pharmacist:'none',lab_technician:'none',receptionist:'full',billing_staff:'none'},
+    {module:'OPD Consultation',super_admin:'full',admin:'view',doctor:'full',nurse:'assist',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'Prescriptions',super_admin:'full',admin:'view',doctor:'full',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'Lab Orders',super_admin:'full',admin:'view',doctor:'order',nurse:'order',pharmacist:'none',lab_technician:'full',receptionist:'none',billing_staff:'none'},
+    {module:'Lab Results',super_admin:'full',admin:'view',doctor:'view',nurse:'view',pharmacist:'none',lab_technician:'full',receptionist:'none',billing_staff:'none'},
+    {module:'Pharmacy Dispense',super_admin:'full',admin:'view',doctor:'view',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'Billing / Invoices',super_admin:'full',admin:'full',doctor:'view',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'view',billing_staff:'full'},
+    {module:'Insurance Claims',super_admin:'full',admin:'full',doctor:'view',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'view',billing_staff:'full'},
+    {module:'Inventory',super_admin:'full',admin:'full',doctor:'view',nurse:'view',pharmacist:'full',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'Sick Leave Certs',super_admin:'full',admin:'view',doctor:'full',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'print',billing_staff:'none'},
+    {module:'Referral Letters',super_admin:'full',admin:'view',doctor:'full',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'print',billing_staff:'none'},
+    {module:'Reports / Analytics',super_admin:'full',admin:'full',doctor:'dept',nurse:'dept',pharmacist:'dept',lab_technician:'dept',receptionist:'own',billing_staff:'own'},
+    {module:'User Management',super_admin:'full',admin:'full',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'System Settings',super_admin:'full',admin:'full',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'},
+    {module:'Audit Logs',super_admin:'full',admin:'view',doctor:'none',nurse:'none',pharmacist:'none',lab_technician:'none',receptionist:'none',billing_staff:'none'}
 ];
 
-const auditLogs = [
-    { timestamp: '2026-06-13 10:05:22', user: 'admin', action: 'USER_CREATED', module: 'Users', ip: '192.168.1.45', success: true },
-    { timestamp: '2026-06-13 09:48:11', user: 'k.asante', action: 'PRESCRIPTION_CREATED', module: 'Prescriptions', ip: '192.168.1.12', success: true },
-    { timestamp: '2026-06-13 09:30:00', user: 'a.owusu', action: 'LAB_RESULT_PUBLISHED', module: 'Laboratory', ip: '192.168.1.18', success: true },
-    { timestamp: '2026-06-13 09:15:33', user: 'a.mensah', action: 'VITALS_RECORDED', module: 'Patients', ip: '192.168.1.15', success: true },
-    { timestamp: '2026-06-13 08:55:07', user: 'y.darko', action: 'PATIENT_REGISTERED', module: 'Patients', ip: '192.168.1.22', success: true },
-    { timestamp: '2026-06-13 08:42:19', user: 'k.boateng', action: 'PRESCRIPTION_DISPENSED', module: 'Pharmacy', ip: '192.168.1.14', success: true },
-    { timestamp: '2026-06-13 08:30:00', user: 'k.asante', action: 'LOGIN', module: 'Auth', ip: '192.168.1.12', success: true },
-    { timestamp: '2026-06-12 16:45:00', user: 'k.boateng', action: 'LOGOUT', module: 'Auth', ip: '192.168.1.14', success: true },
-    { timestamp: '2026-06-12 14:20:00', user: 'e.addo', action: 'INVOICE_GENERATED', module: 'Billing', ip: '192.168.1.20', success: true },
-    { timestamp: '2026-06-12 11:00:00', user: 'admin', action: 'SETTINGS_CHANGED', module: 'Settings', ip: '192.168.1.45', success: true }
+const auditLogs=[
+    {timestamp:'2026-06-13 10:05:22',user:'admin',action:'USER_CREATED',module:'Users',ip:'192.168.1.45',success:true},
+    {timestamp:'2026-06-13 09:48:11',user:'j.mwangi',action:'PRESCRIPTION_CREATED',module:'Prescriptions',ip:'192.168.1.12',success:true},
+    {timestamp:'2026-06-13 09:30:00',user:'m.akinyi',action:'LAB_RESULT_PUBLISHED',module:'Laboratory',ip:'192.168.1.18',success:true},
+    {timestamp:'2026-06-13 09:15:33',user:'g.wanjiku',action:'VITALS_RECORDED',module:'Patients',ip:'192.168.1.15',success:true},
+    {timestamp:'2026-06-13 08:55:07',user:'j.kamau',action:'PATIENT_REGISTERED',module:'Patients',ip:'192.168.1.22',success:true},
+    {timestamp:'2026-06-13 08:42:19',user:'p.ochieng',action:'PRESCRIPTION_DISPENSED',module:'Pharmacy',ip:'192.168.1.14',success:true},
+    {timestamp:'2026-06-13 08:30:00',user:'j.mwangi',action:'LOGIN',module:'Auth',ip:'192.168.1.12',success:true},
+    {timestamp:'2026-06-12 16:45:00',user:'p.ochieng',action:'LOGOUT',module:'Auth',ip:'192.168.1.14',success:true},
+    {timestamp:'2026-06-12 14:20:00',user:'f.njeri',action:'INVOICE_GENERATED',module:'Billing',ip:'192.168.1.20',success:true},
+    {timestamp:'2026-06-12 11:00:00',user:'admin',action:'SETTINGS_CHANGED',module:'Settings',ip:'192.168.1.45',success:true}
 ];
 
-const allCurrencies = {
-    GHS: { code: 'GHS', name: 'Ghana Cedi', symbol: 'GH₵', flag: 'GH' },
-    NGN: { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', flag: 'NG' },
-    KES: { code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh', flag: 'KE' },
-    ZAR: { code: 'ZAR', name: 'South African Rand', symbol: 'R', flag: 'ZA' },
-    UGX: { code: 'UGX', name: 'Ugandan Shilling', symbol: 'USh', flag: 'UG' },
-    TZS: { code: 'TZS', name: 'Tanzanian Shilling', symbol: 'TSh', flag: 'TZ' },
-    USD: { code: 'USD', name: 'US Dollar', symbol: '$', flag: 'US' },
-    EUR: { code: 'EUR', name: 'Euro', symbol: '€', flag: 'EU' },
-    GBP: { code: 'GBP', name: 'British Pound', symbol: '£', flag: 'GB' },
-    INR: { code: 'INR', name: 'Indian Rupee', symbol: '₹', flag: 'IN' }
-};
+// Currency - Fixed to KES/Kenya
+const currency={code:'KES',name:'Kenyan Shilling',symbol:'KSh'};
+let currentPage=1,pageSize=7,editingUserId=null,deletingUserId=null,filteredUsers=[...users];
 
-let defaultCurrency = 'GHS';
-let additionalCurrenciesList = ['USD'];
-let exchangeRates = { USD: 15.5, EUR: 16.8, GBP: 19.2 };
-let currentPage = 1;
-const pageSize = 7;
-let editingUserId = null;
-let deletingUserId = null;
-let filteredUsers = [...users];
-
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', function() {
-    lucide.createIcons();
-    updateStats();
-    renderUsersTable();
-    renderPermissionsTable();
-    renderAuditLog();
-    renderCurrencyList();
-    renderAdditionalCurrencies();
-    renderExchangeRates();
-    updateFormatPreview();
-    setupFacilityPreview();
-});
-
-// ==================== TABS ====================
-function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-    event.target.classList.add('active');
-    document.getElementById('tab-' + tabName).classList.remove('hidden');
+function switchTab(tabName,btn){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+tabName).classList.remove('hidden');
     lucide.createIcons();
 }
 
-// ==================== TOAST ====================
-function showToast(message, type) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.background = type === 'error' ? '#dc2626' : '#1e293b';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+function showToast(msg,type){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.style.background=type==='error'?'#dc2626':'#1e293b';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ==================== GENERAL SETTINGS ====================
-function saveHospitalInfo() { showToast('Hospital information saved successfully'); }
-function resetForm() {
-    document.getElementById('hospitalName').value = 'MediFlow Hospital';
-    document.getElementById('department').value = 'Outpatient Department (OPD)';
-    document.getElementById('phone').value = '0302-000-000';
-    document.getElementById('email').value = 'info@mediflow.local';
-    document.getElementById('address').value = '123 Hospital Road, Accra, Ghana';
-    showToast('Form reset to defaults');
-}
-function clearCache() { showToast('Cache cleared successfully'); }
-
-// ==================== FACILITY INFO ====================
-function setupFacilityPreview() {
-    const inputs = ['facilityName', 'facilityTagline', 'facilityAddress', 'facilityPhone', 'facilityEmail'];
-    inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', updateFacilityPreview);
-    });
+// Facility
+function updateFacilityPreview(){
+    const name=document.getElementById('facilityName').value||'MediFlow Hospital';
+    const tagline=document.getElementById('facilityTagline').value||'Excellence in Healthcare';
+    const address=document.getElementById('facilityAddress').value||'123 Hospital Road, Nairobi, Kenya';
+    const phone=document.getElementById('facilityPhone').value||'+254 712 000 000';
+    const email=document.getElementById('facilityEmail').value||'info@mediflow.local';
+    document.getElementById('previewName').textContent=name;
+    document.getElementById('previewTagline').textContent=tagline;
+    document.getElementById('previewAddress').textContent=address;
+    document.getElementById('previewContact').textContent=phone+' | '+email;
+    document.getElementById('previewReceiptName').textContent=name;
+    const addrParts=address.split(',');
+    document.getElementById('previewReceiptAddress').textContent=(addrParts[0]||'')+(addrParts[1]?', '+addrParts[1]:'')+(addrParts[2]?', '+addrParts[2]:'');
+    document.getElementById('previewReceiptPhone').textContent='Tel: '+phone;
 }
 
-function updateFacilityPreview() {
-    const name = document.getElementById('facilityName').value || 'MediFlow Hospital';
-    const tagline = document.getElementById('facilityTagline').value || 'Excellence in Healthcare';
-    const address = document.getElementById('facilityAddress').value || '123 Hospital Road, East Legon, Accra, Ghana';
-    const phone = document.getElementById('facilityPhone').value || '+233 302 000 000';
-    const email = document.getElementById('facilityEmail').value || 'info@mediflow.local';
-
-    document.getElementById('previewName').textContent = name;
-    document.getElementById('previewTagline').textContent = tagline;
-    document.getElementById('previewAddress').textContent = address;
-    document.getElementById('previewContact').textContent = phone + ' | ' + email;
-
-    document.getElementById('previewReceiptName').textContent = name;
-    document.getElementById('previewReceiptAddress').textContent = address.split(',')[0] + ', ' + (address.split(',')[1] || '') + ', ' + (address.split(',')[2] || '');
-    document.getElementById('previewReceiptPhone').textContent = 'Tel: ' + phone;
-}
-
-function updateCountryPreview() {
-    const country = document.getElementById('facilityCountry').value;
-    const countryNames = { GH: 'Ghana', NG: 'Nigeria', KE: 'Kenya', ZA: 'South Africa', UG: 'Uganda', TZ: 'Tanzania', US: 'United States', GB: 'United Kingdom', IN: 'India', other: 'Other' };
-    showToast('Country updated to ' + countryNames[country]);
-}
-
-function handleLogoUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { showToast('File too large. Max 2MB.', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('logoPreview').src = e.target.result;
+function handleLogoUpload(e){
+    const f=e.target.files[0];if(!f||f.size>2*1024*1024){showToast('File too large. Max 2MB.','error');return;}
+    const r=new FileReader();
+    r.onload=function(ev){
+        document.getElementById('logoPreview').src=ev.target.result;
         document.getElementById('logoPreview').classList.remove('hidden');
         document.getElementById('logoPlaceholder').classList.add('hidden');
         document.getElementById('logoUploadArea').classList.add('has-image');
-        document.getElementById('removeLogoBtn').style.display = 'block';
-        document.getElementById('previewLogo').src = e.target.result;
-        document.getElementById('previewReceiptLogo').src = e.target.result;
-        showToast('Logo uploaded successfully');
+        document.getElementById('removeLogoBtn').style.display='block';
+        document.getElementById('previewLogo').src=ev.target.result;
+        document.getElementById('previewReceiptLogo').src=ev.target.result;
+        showToast('Logo uploaded');
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(f);
 }
 
-function removeLogo() {
-    document.getElementById('logoPreview').src = '';
+function removeLogo(){
+    document.getElementById('logoPreview').src='';
     document.getElementById('logoPreview').classList.add('hidden');
     document.getElementById('logoPlaceholder').classList.remove('hidden');
     document.getElementById('logoUploadArea').classList.remove('has-image');
-    document.getElementById('removeLogoBtn').style.display = 'none';
-    document.getElementById('previewLogo').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%233b82f6' width='64' height='64' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";
-    document.getElementById('previewReceiptLogo').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%233b82f6' width='40' height='40' rx='6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";
+    document.getElementById('removeLogoBtn').style.display='none';
+    document.getElementById('previewLogo').src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%233b82f6' width='64' height='64' rx='12'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";
+    document.getElementById('previewReceiptLogo').src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%233b82f6' width='40' height='40' rx='6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";
     showToast('Logo removed');
 }
 
-function handleHeaderUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { showToast('File too large. Max 2MB.', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('headerPreview').src = e.target.result;
+function handleHeaderUpload(e){
+    const f=e.target.files[0];if(!f||f.size>2*1024*1024){showToast('File too large. Max 2MB.','error');return;}
+    const r=new FileReader();
+    r.onload=function(ev){
+        document.getElementById('headerPreview').src=ev.target.result;
         document.getElementById('headerPreview').classList.remove('hidden');
         document.getElementById('headerPlaceholder').classList.add('hidden');
         document.getElementById('headerUploadArea').classList.add('has-image');
-        document.getElementById('removeHeaderBtn').style.display = 'block';
-        showToast('Header banner uploaded');
+        document.getElementById('removeHeaderBtn').style.display='block';
+        showToast('Header uploaded');
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(f);
 }
 
-function removeHeader() {
-    document.getElementById('headerPreview').src = '';
+function removeHeader(){
+    document.getElementById('headerPreview').src='';
     document.getElementById('headerPreview').classList.add('hidden');
     document.getElementById('headerPlaceholder').classList.remove('hidden');
     document.getElementById('headerUploadArea').classList.remove('has-image');
-    document.getElementById('removeHeaderBtn').style.display = 'none';
-    showToast('Header banner removed');
+    document.getElementById('removeHeaderBtn').style.display='none';
+    showToast('Header removed');
 }
 
-function saveFacility() { showToast('Facility settings saved successfully'); }
-function resetFacility() {
-    document.getElementById('facilityName').value = 'MediFlow Hospital';
-    document.getElementById('facilityTagline').value = 'Excellence in Healthcare';
-    document.getElementById('facilityRegNo').value = 'HOSP-GH-2024-001';
-    document.getElementById('facilityTaxId').value = 'VAT-GH-987654321';
-    document.getElementById('facilityAddress').value = '123 Hospital Road, East Legon, Accra, Ghana';
-    document.getElementById('facilityCity').value = 'Accra';
-    document.getElementById('facilityCountry').value = 'GH';
-    document.getElementById('facilityPhone').value = '+233 302 000 000';
-    document.getElementById('facilityEmail').value = 'info@mediflow.local';
-    document.getElementById('facilityWebsite').value = 'www.mediflow.local';
-    document.getElementById('facilityEmergency').value = '+233 302 999 999';
+function saveFacility(){showToast('Facility settings saved');}
+function resetFacility(){
+    document.getElementById('facilityName').value='MediFlow Hospital';
+    document.getElementById('facilityTagline').value='Excellence in Healthcare';
+    document.getElementById('facilityRegNo').value='HOSP-KE-2024-001';
+    document.getElementById('facilityTaxId').value='VAT-KE-987654321';
+    document.getElementById('facilityAddress').value='123 Hospital Road, Westlands, Nairobi, Kenya';
+    document.getElementById('facilityCity').value='Nairobi';
+    document.getElementById('facilityCountry').value='KE';
+    document.getElementById('facilityPhone').value='+254 712 000 000';
+    document.getElementById('facilityEmail').value='info@mediflow.local';
+    document.getElementById('facilityWebsite').value='www.mediflow.local';
+    document.getElementById('facilityEmergency').value='+254 712 999 999';
     updateFacilityPreview();
-    showToast('Facility settings reset to default');
+    showToast('Facility reset to default');
 }
 
-// ==================== CURRENCY ====================
-function renderCurrencyList() {
-    const container = document.getElementById('currencyList');
-    container.innerHTML = Object.values(allCurrencies).map(c => {
-        const isActive = c.code === defaultCurrency;
-        return `<div class="currency-row ${isActive ? 'active' : ''}" onclick="setDefaultCurrency('${c.code}')">
-            <div class="currency-info">
-                <span class="currency-code">${c.code}</span>
-                <span class="currency-name">${c.name}</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="currency-symbol">${c.symbol}</span>
-                ${isActive ? '<span class="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded">DEFAULT</span>' : '<span class="text-xs text-gray-400">Click to set default</span>'}
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function setDefaultCurrency(code) {
-    defaultCurrency = code;
-    renderCurrencyList();
-    updateFormatPreview();
-    updateReceiptPreview();
-    showToast('Default currency set to ' + allCurrencies[code].name);
-}
-
-function updateFormatPreview() {
-    const symbol = allCurrencies[defaultCurrency].symbol;
-    const position = document.getElementById('symbolPosition').value;
-    const decSep = document.getElementById('decimalSeparator').value;
-    const thouSep = document.getElementById('thousandsSeparator').value;
-    const places = parseInt(document.getElementById('decimalPlaces').value);
-
-    let amount = '1234.56';
-    let parts = amount.split('.');
-    let intPart = parts[0];
-    let decPart = parts[1] || '';
-
-    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thouSep === ' ' ? ' ' : thouSep);
-    if (places === 0) { decPart = ''; }
-    else if (places === 3) { decPart = (decPart + '0').substring(0, 3); }
-    else { decPart = decPart.substring(0, 2); }
-
-    let formatted = decPart ? intPart + decSep + decPart : intPart;
-    let preview = position === 'before' ? symbol + ' ' + formatted : formatted + ' ' + symbol;
-    document.getElementById('formatPreview').textContent = preview;
+// Currency - Simplified KES only
+function updateFormatPreview(){
+    const pos=document.getElementById('symbolPosition').value;
+    const decSep=document.getElementById('decimalSeparator').value;
+    const thouSep=document.getElementById('thousandsSeparator').value;
+    const places=parseInt(document.getElementById('decimalPlaces').value);
+    let intPart='1'+thouSep+'234';
+    let decPart=places===0?'':(places===3?'560':'56');
+    let formatted=decPart?intPart+decSep+decPart:intPart;
+    document.getElementById('formatPreview').textContent=pos==='before'?currency.symbol+' '+formatted:formatted+' '+currency.symbol;
     updateReceiptPreview();
 }
 
-function updateReceiptPreview() {
-    const symbol = allCurrencies[defaultCurrency].symbol;
-    for (let i = 1; i <= 6; i++) {
-        const el = document.getElementById('receiptCurrency' + i);
-        if (el) el.textContent = symbol;
-        const el2 = document.getElementById('previewCurrencySymbol' + i);
-        if (el2) el2.textContent = symbol;
+function updateReceiptPreview(){
+    for(let i=1;i<=6;i++){
+        const el=document.getElementById('receiptCurrency'+i);
+        if(el)el.textContent=currency.symbol;
+        const el2=document.getElementById('previewCurrencySymbol'+i);
+        if(el2)el2.textContent=currency.symbol;
     }
 }
 
-function renderAdditionalCurrencies() {
-    const container = document.getElementById('additionalCurrencies');
-    if (additionalCurrenciesList.length === 0) {
-        container.innerHTML = '<p class="text-sm text-gray-400 italic">No additional currencies configured</p>';
-        return;
-    }
-    container.innerHTML = additionalCurrenciesList.map(code => {
-        const c = allCurrencies[code];
-        if (!c) return '';
-        return `<div class="add-currency-row">
-            <div class="flex items-center gap-3">
-                <span class="font-bold text-gray-900">${c.code}</span>
-                <span class="text-gray-600">${c.name}</span>
-                <span class="text-blue-600 font-semibold">${c.symbol}</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500">1 ${defaultCurrency} =</span>
-                <input type="number" class="rate-input" value="${exchangeRates[code] || 1}" step="0.01" onchange="updateRate('${code}', this.value)">
-                <span class="text-xs text-gray-500">${c.code}</span>
-                <button class="p-1 rounded hover:bg-red-50 text-red-500" onclick="removeCurrency('${code}')"><i data-lucide="x" class="w-4 h-4"></i></button>
-            </div>
-        </div>`;
-    }).join('');
-    lucide.createIcons();
-}
-
-function updateRate(code, value) {
-    exchangeRates[code] = parseFloat(value);
-    showToast('Exchange rate updated for ' + code);
-}
-
-function addCurrency() {
-    const select = document.getElementById('addCurrencySelect');
-    const code = select.value;
-    if (!code) { showToast('Please select a currency', 'error'); return; }
-    if (code === defaultCurrency) { showToast('Currency is already the default', 'error'); return; }
-    if (additionalCurrenciesList.includes(code)) { showToast('Currency already added', 'error'); return; }
-    additionalCurrenciesList.push(code);
-    if (!exchangeRates[code]) exchangeRates[code] = 1.0;
-    renderAdditionalCurrencies();
-    renderExchangeRates();
-    select.value = '';
-    showToast(allCurrencies[code].name + ' added as accepted currency');
-}
-
-function removeCurrency(code) {
-    additionalCurrenciesList = additionalCurrenciesList.filter(c => c !== code);
-    renderAdditionalCurrencies();
-    renderExchangeRates();
-    showToast(allCurrencies[code].name + ' removed');
-}
-
-function renderExchangeRates() {
-    const container = document.getElementById('exchangeRates');
-    const all = [defaultCurrency, ...additionalCurrenciesList];
-    container.innerHTML = all.map(code => {
-        const c = allCurrencies[code];
-        if (!c) return '';
-        const rate = code === defaultCurrency ? 1.0 : (exchangeRates[code] || 1.0);
-        return `<div class="flex justify-between items-center py-1.5 border-b border-gray-100">
-            <span class="font-medium text-gray-700">1 ${defaultCurrency}</span>
-            <span class="text-gray-900 font-semibold">= ${rate.toFixed(2)} ${c.code} (${c.symbol})</span>
-        </div>`;
-    }).join('');
-}
-
-function saveCurrency() { showToast('Currency settings saved successfully'); }
-function resetCurrency() {
-    defaultCurrency = 'GHS';
-    additionalCurrenciesList = ['USD'];
-    exchangeRates = { USD: 15.5, EUR: 16.8, GBP: 19.2 };
-    document.getElementById('symbolPosition').value = 'before';
-    document.getElementById('decimalSeparator').value = '.';
-    document.getElementById('thousandsSeparator').value = ',';
-    document.getElementById('decimalPlaces').value = '2';
-    renderCurrencyList();
-    renderAdditionalCurrencies();
-    renderExchangeRates();
+function saveCurrency(){showToast('Currency settings saved');}
+function resetCurrency(){
+    document.getElementById('symbolPosition').value='before';
+    document.getElementById('decimalSeparator').value='.';
+    document.getElementById('thousandsSeparator').value=',';
+    document.getElementById('decimalPlaces').value='2';
     updateFormatPreview();
-    showToast('Currency settings reset to default');
+    showToast('Currency reset to default');
 }
 
-// ==================== USERS TABLE ====================
-function updateStats() {
-    document.getElementById('totalUsers').textContent = users.length;
-    document.getElementById('activeUsers').textContent = users.filter(u => u.isActive).length;
-    document.getElementById('doctorCount').textContent = users.filter(u => u.role === 'doctor').length;
-    document.getElementById('labCount').textContent = users.filter(u => u.role === 'lab_technician').length;
-    document.getElementById('receptionCount').textContent = users.filter(u => u.role === 'receptionist').length;
+// General
+function saveHospitalInfo(){showToast('Hospital info saved');}
+function resetForm(){
+    document.getElementById('hospitalName').value='MediFlow Hospital';
+    document.getElementById('department').value='Outpatient Department (OPD)';
+    document.getElementById('phone').value='0302-000-000';
+    document.getElementById('email').value='info@mediflow.local';
+    document.getElementById('address').value='123 Hospital Road, Accra, Ghana';
+    showToast('Reset to defaults');
+}
+function clearCache(){showToast('Cache cleared');}
+
+// Users
+function updateStats(){
+    document.getElementById('totalUsers').textContent=users.length;
+    document.getElementById('activeUsers').textContent=users.filter(u=>u.isActive).length;
+    document.getElementById('doctorCount').textContent=users.filter(u=>u.role==='doctor').length;
+    document.getElementById('labCount').textContent=users.filter(u=>u.role==='lab_technician').length;
+    document.getElementById('receptionCount').textContent=users.filter(u=>u.role==='receptionist').length;
 }
 
-function filterUsers() {
-    const search = document.getElementById('userSearch').value.toLowerCase();
-    const role = document.getElementById('roleFilter').value;
-    const status = document.getElementById('statusFilter').value;
-    filteredUsers = users.filter(u => {
-        const matchSearch = !search || u.fullName.toLowerCase().includes(search) || u.username.toLowerCase().includes(search) || u.email.toLowerCase().includes(search);
-        const matchRole = !role || u.role === role;
-        const matchStatus = !status || (status === 'active' ? u.isActive : !u.isActive);
-        return matchSearch && matchRole && matchStatus;
+function filterUsers(){
+    const s=document.getElementById('userSearch').value.toLowerCase();
+    const r=document.getElementById('roleFilter').value;
+    const st=document.getElementById('statusFilter').value;
+    filteredUsers=users.filter(u=>{
+        const ms=!s||u.fullName.toLowerCase().includes(s)||u.username.toLowerCase().includes(s)||u.email.toLowerCase().includes(s);
+        const mr=!r||u.role===r;
+        const mst=!st||(st==='active'?u.isActive:!u.isActive);
+        return ms&&mr&&mst;
     });
-    currentPage = 1;
+    currentPage=1;
     renderUsersTable();
 }
 
-function renderUsersTable() {
-    const tbody = document.getElementById('usersTableBody');
-    const start = (currentPage - 1) * pageSize;
-    const pageUsers = filteredUsers.slice(start, start + pageSize);
-    tbody.innerHTML = pageUsers.map(user => {
-        const role = roleConfig[user.role];
-        return '<tr class="table-row border-b border-gray-50 transition-colors">' +
-            '<td class="px-5 py-4"><div class="flex items-center gap-3">' +
-            '<div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm">' + user.fullName.split(' ').map(n => n[0]).join('').substring(0,2) + '</div>' +
-            '<div><p class="font-medium text-sm text-gray-900">' + user.fullName + '</p><p class="text-xs text-gray-500">' + user.email + '</p></div></div></td>' +
-            '<td class="px-5 py-4"><span class="role-badge ' + role.color + '"><i data-lucide="' + role.icon + '" class="w-3 h-3"></i>' + role.display + '</span></td>' +
-            '<td class="px-5 py-4 text-sm text-gray-600">' + (user.department || '-') + '</td>' +
-            '<td class="px-5 py-4 text-sm text-gray-600 font-mono">' + (user.license || '-') + '</td>' +
-            '<td class="px-5 py-4 text-sm text-gray-500">' + (user.lastLogin || 'Never') + '</td>' +
-            '<td class="px-5 py-4"><div class="flex items-center gap-2"><span class="status-dot ' + (user.isActive ? 'status-active' : 'status-inactive') + '"></span><span class="text-sm ' + (user.isActive ? 'text-green-600' : 'text-red-500') + '">' + (user.isActive ? 'Active' : 'Inactive') + '</span></div></td>' +
-            '<td class="px-5 py-4 text-right"><div class="relative inline-block">' +
-            '<button class="p-1.5 rounded-lg hover:bg-gray-100" onclick="toggleDropdown(' + user.id + ')"><i data-lucide="more-vertical" class="w-4 h-4 text-gray-500"></i></button>' +
-            '<div class="dropdown-menu" id="dropdown-' + user.id + '">' +
-            '<div class="dropdown-item" onclick="editUser(' + user.id + ')"><i data-lucide="pencil" class="w-4 h-4"></i> Edit</div>' +
-            '<div class="dropdown-item" onclick="resetPassword(' + user.id + ')"><i data-lucide="key" class="w-4 h-4"></i> Reset Password</div>' +
-            '<div class="dropdown-item" onclick="viewActivity(' + user.id + ')"><i data-lucide="activity" class="w-4 h-4"></i> Activity Log</div>' +
-            '<div class="border-t border-gray-100 my-1"></div>' +
-            '<div class="dropdown-item danger" onclick="confirmDeactivate(' + user.id + ')"><i data-lucide="' + (user.isActive ? 'user-x' : 'user-check') + '" class="w-4 h-4"></i>' + (user.isActive ? 'Deactivate' : 'Activate') + '</div>' +
+function renderUsersTable(){
+    const tbody=document.getElementById('usersTableBody');
+    const start=(currentPage-1)*pageSize;
+    const pageUsers=filteredUsers.slice(start,start+pageSize);
+    tbody.innerHTML=pageUsers.map(user=>{
+        const role=roleConfig[user.role];
+        return '<tr class="table-row border-b border-gray-50 transition-colors">'+
+            '<td class="px-5 py-4"><div class="flex items-center gap-3">'+
+            '<div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm">'+user.fullName.split(' ').map(n=>n[0]).join('').substring(0,2)+'</div>'+
+            '<div><p class="font-medium text-sm text-gray-900">'+user.fullName+'</p><p class="text-xs text-gray-500">'+user.email+'</p></div></div></td>'+
+            '<td class="px-5 py-4"><span class="role-badge '+role.color+'"><i data-lucide="'+role.icon+'" class="w-3 h-3"></i>'+role.display+'</span></td>'+
+            '<td class="px-5 py-4 text-sm text-gray-600">'+(user.department||'-')+'</td>'+
+            '<td class="px-5 py-4 text-sm text-gray-600 font-mono">'+(user.license||'-')+'</td>'+
+            '<td class="px-5 py-4 text-sm text-gray-500">'+(user.lastLogin||'Never')+'</td>'+
+            '<td class="px-5 py-4"><div class="flex items-center gap-2"><span class="status-dot '+(user.isActive?'status-active':'status-inactive')+'"></span><span class="text-sm '+(user.isActive?'text-green-600':'text-red-500')+'">'+(user.isActive?'Active':'Inactive')+'</span></div></td>'+
+            '<td class="px-5 py-4 text-right"><div class="relative inline-block">'+
+            '<button class="p-1.5 rounded-lg hover:bg-gray-100" onclick="toggleDropdown('+user.id+')"><i data-lucide="more-vertical" class="w-4 h-4 text-gray-500"></i></button>'+
+            '<div class="dropdown-menu" id="dropdown-'+user.id+'">'+
+            '<div class="dropdown-item" onclick="editUser('+user.id+')"><i data-lucide="pencil" class="w-4 h-4"></i>Edit</div>'+
+            '<div class="dropdown-item" onclick="resetPassword('+user.id+')"><i data-lucide="key" class="w-4 h-4"></i>Reset Password</div>'+
+            '<div class="dropdown-item" onclick="viewActivity('+user.id+')"><i data-lucide="activity" class="w-4 h-4"></i>Activity Log</div>'+
+            '<div class="border-t border-gray-100 my-1"></div>'+
+            '<div class="dropdown-item danger" onclick="confirmDeactivate('+user.id+')"><i data-lucide="'+(user.isActive?'user-x':'user-check')+'" class="w-4 h-4"></i>'+(user.isActive?'Deactivate':'Activate')+'</div>'+
             '</div></div></td></tr>';
     }).join('');
-    document.getElementById('paginationInfo').textContent = 'Showing ' + (start + 1) + '-' + Math.min(start + pageSize, filteredUsers.length) + ' of ' + filteredUsers.length + ' users';
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = start + pageSize >= filteredUsers.length;
-    document.getElementById('prevBtn').style.opacity = currentPage === 1 ? '0.5' : '1';
-    document.getElementById('nextBtn').style.opacity = start + pageSize >= filteredUsers.length ? '0.5' : '1';
+    document.getElementById('paginationInfo').textContent='Showing '+(start+1)+'-'+Math.min(start+pageSize,filteredUsers.length)+' of '+filteredUsers.length+' users';
+    document.getElementById('prevBtn').disabled=currentPage===1;
+    document.getElementById('nextBtn').disabled=start+pageSize>=filteredUsers.length;
+    document.getElementById('prevBtn').style.opacity=currentPage===1?'0.5':'1';
+    document.getElementById('nextBtn').style.opacity=start+pageSize>=filteredUsers.length?'0.5':'1';
     lucide.createIcons();
 }
 
-function prevPage() { if (currentPage > 1) { currentPage--; renderUsersTable(); } }
-function nextPage() { if ((currentPage - 1) * pageSize + pageSize < filteredUsers.length) { currentPage++; renderUsersTable(); } }
+function prevPage(){if(currentPage>1){currentPage--;renderUsersTable();}}
+function nextPage(){if((currentPage-1)*pageSize+pageSize<filteredUsers.length){currentPage++;renderUsersTable();}}
 
-function toggleDropdown(userId) {
-    document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
-    document.getElementById('dropdown-' + userId).classList.toggle('show');
+function toggleDropdown(userId){
+    document.querySelectorAll('.dropdown-menu').forEach(d=>d.classList.remove('show'));
+    document.getElementById('dropdown-'+userId).classList.toggle('show');
 }
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.dropdown-menu') && !e.target.closest('button')) {
-        document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+document.addEventListener('click',function(e){
+    if(!e.target.closest('.dropdown-menu')&&!e.target.closest('button')){
+        document.querySelectorAll('.dropdown-menu').forEach(d=>d.classList.remove('show'));
     }
 });
 
-// ==================== USER MODAL ====================
-function openUserModal() {
-    editingUserId = null;
-    document.getElementById('modalTitle').textContent = 'Add New User';
-    document.getElementById('passwordHint').textContent = '';
-    document.getElementById('userPassword').placeholder = 'Min 8 chars, 1 uppercase, 1 number, 1 special';
-    document.getElementById('userFullName').value = '';
-    document.getElementById('userUsername').value = '';
-    document.getElementById('userEmail').value = '';
-    document.getElementById('userPhone').value = '';
-    document.getElementById('userRole').value = '';
-    document.getElementById('userDepartment').value = '';
-    document.getElementById('userLicense').value = '';
-    document.getElementById('userPassword').value = '';
-    document.getElementById('userActive').checked = true;
-    document.getElementById('licenseField').classList.add('hidden');
+function openUserModal(){
+    editingUserId=null;
+    document.getElementById('modalTitle').textContent='Add New User';
+    document.getElementById('passwordHint').textContent='';
+    document.getElementById('userPassword').placeholder='Min 8 chars, 1 uppercase, 1 number, 1 special';
+    document.getElementById('userFullName').value='';
+    document.getElementById('userUsername').value='';
+    document.getElementById('userEmail').value='';
+    document.getElementById('userPhone').value='';
+    document.getElementById('userRole').value='';
+    document.getElementById('userDepartment').value='';
+    document.getElementById('userLicense').value='';
+    document.getElementById('userPassword').value='';
+    document.getElementById('userActive').checked=true;
+    document.getElementById('licenseField').style.display='none';
     document.getElementById('userModal').classList.add('show');
     lucide.createIcons();
 }
 
-function closeUserModal() { document.getElementById('userModal').classList.remove('show'); }
+function closeUserModal(){document.getElementById('userModal').classList.remove('show');}
 
-function toggleLicenseField() {
-    const role = document.getElementById('userRole').value;
-    const needsLicense = ['doctor', 'pharmacist', 'lab_technician', 'nurse'].includes(role);
-    document.getElementById('licenseField').classList.toggle('hidden', !needsLicense);
+function toggleLicenseField(){
+    const role=document.getElementById('userRole').value;
+    document.getElementById('licenseField').style.display=['doctor','pharmacist','lab_technician','nurse'].includes(role)?'block':'none';
 }
 
-function editUser(id) {
-    const user = users.find(u => u.id === id);
-    if (!user) return;
-    editingUserId = id;
-    document.getElementById('modalTitle').textContent = 'Edit User';
-    document.getElementById('passwordHint').textContent = '(leave blank to keep current)';
-    document.getElementById('userFullName').value = user.fullName;
-    document.getElementById('userUsername').value = user.username;
-    document.getElementById('userEmail').value = user.email;
-    document.getElementById('userPhone').value = user.phone || '';
-    document.getElementById('userRole').value = user.role;
-    document.getElementById('userDepartment').value = user.department || '';
-    document.getElementById('userLicense').value = user.license || '';
-    document.getElementById('userPassword').value = '';
-    document.getElementById('userActive').checked = user.isActive;
+function editUser(id){
+    const user=users.find(u=>u.id===id);if(!user)return;
+    editingUserId=id;
+    document.getElementById('modalTitle').textContent='Edit User';
+    document.getElementById('passwordHint').textContent='(leave blank to keep current)';
+    document.getElementById('userFullName').value=user.fullName;
+    document.getElementById('userUsername').value=user.username;
+    document.getElementById('userEmail').value=user.email;
+    document.getElementById('userPhone').value=user.phone||'';
+    document.getElementById('userRole').value=user.role;
+    document.getElementById('userDepartment').value=user.department||'';
+    document.getElementById('userLicense').value=user.license||'';
+    document.getElementById('userPassword').value='';
+    document.getElementById('userActive').checked=user.isActive;
     toggleLicenseField();
     document.getElementById('userModal').classList.add('show');
     lucide.createIcons();
 }
 
-function saveUser() {
-    const fullName = document.getElementById('userFullName').value.trim();
-    const username = document.getElementById('userUsername').value.trim();
-    const email = document.getElementById('userEmail').value.trim();
-    const role = document.getElementById('userRole').value;
-    const department = document.getElementById('userDepartment').value;
-    const license = document.getElementById('userLicense').value.trim() || null;
-    const phone = document.getElementById('userPhone').value.trim() || null;
-    const password = document.getElementById('userPassword').value;
-    const isActive = document.getElementById('userActive').checked;
-    if (!fullName || !username || !email || !role) { showToast('Please fill in all required fields', 'error'); return; }
-    if (!editingUserId && !password) { showToast('Password is required for new users', 'error'); return; }
-    if (editingUserId) {
-        const user = users.find(u => u.id === editingUserId);
-        user.fullName = fullName; user.username = username; user.email = email;
-        user.role = role; user.department = department || null; user.license = license;
-        user.phone = phone; user.isActive = isActive;
-        showToast('User updated successfully');
-    } else {
-        const newId = Math.max(...users.map(u => u.id)) + 1;
-        users.push({ id: newId, fullName, username, email, role, department: department || null, license, phone, isActive, lastLogin: null });
-        showToast('User created successfully');
+function saveUser(){
+    const fullName=document.getElementById('userFullName').value.trim();
+    const username=document.getElementById('userUsername').value.trim();
+    const email=document.getElementById('userEmail').value.trim();
+    const role=document.getElementById('userRole').value;
+    const department=document.getElementById('userDepartment').value;
+    const license=document.getElementById('userLicense').value.trim()||null;
+    const phone=document.getElementById('userPhone').value.trim()||null;
+    const password=document.getElementById('userPassword').value;
+    const isActive=document.getElementById('userActive').checked;
+    if(!fullName||!username||!email||!role){showToast('Please fill in all required fields','error');return;}
+    if(!editingUserId&&!password){showToast('Password is required for new users','error');return;}
+    if(editingUserId){
+        const user=users.find(u=>u.id===editingUserId);
+        user.fullName=fullName;user.username=username;user.email=email;
+        user.role=role;user.department=department||null;user.license=license;
+        user.phone=phone;user.isActive=isActive;
+        showToast('User updated');
+    }else{
+        const newId=Math.max(...users.map(u=>u.id))+1;
+        users.push({id:newId,fullName,username,email,role,department:department||null,license,phone,isActive,lastLogin:null});
+        showToast('User created');
     }
     closeUserModal();
     filterUsers();
     updateStats();
 }
 
-function confirmDeactivate(id) {
-    const user = users.find(u => u.id === id);
-    if (!user) return;
-    deletingUserId = id;
-    document.getElementById('deleteUserName').textContent = user.fullName;
+function confirmDeactivate(id){
+    const user=users.find(u=>u.id===id);if(!user)return;
+    deletingUserId=id;
+    document.getElementById('deleteUserName').textContent=user.fullName;
     document.getElementById('deleteModal').classList.add('show');
     lucide.createIcons();
 }
-function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('show'); }
-function confirmDelete() {
-    const user = users.find(u => u.id === deletingUserId);
-    if (user) { user.isActive = !user.isActive; showToast(user.isActive ? 'User activated' : 'User deactivated'); }
-    closeDeleteModal();
-    filterUsers();
-    updateStats();
+function closeDeleteModal(){document.getElementById('deleteModal').classList.remove('show');}
+function confirmDelete(){
+    const user=users.find(u=>u.id===deletingUserId);
+    if(user){user.isActive=!user.isActive;showToast(user.isActive?'User activated':'User deactivated');}
+    closeDeleteModal();filterUsers();updateStats();
 }
-function resetPassword(id) { const user = users.find(u => u.id === id); showToast('Password reset link sent to ' + user.email); }
-function viewActivity(id) { const user = users.find(u => u.id === id); showToast('Viewing activity log for ' + user.fullName); }
-function exportUsers() {
-    const csv = ['Name,Username,Email,Role,Department,License,Phone,Status,Last Login'];
-    users.forEach(u => { csv.push(u.fullName + ',' + u.username + ',' + u.email + ',' + roleConfig[u.role].display + ',' + (u.department || '') + ',' + (u.license || '') + ',' + (u.phone || '') + ',' + (u.isActive ? 'Active' : 'Inactive') + ',' + (u.lastLogin || 'Never')); });
-    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'mediflow-users.csv'; a.click(); URL.revokeObjectURL(url);
+function resetPassword(id){const user=users.find(u=>u.id===id);showToast('Password reset link sent to '+user.email);}
+function viewActivity(id){const user=users.find(u=>u.id===id);showToast('Viewing activity log for '+user.fullName);}
+function exportUsers(){
+    const csv=['Name,Username,Email,Role,Department,License,Phone,Status,Last Login'];
+    users.forEach(u=>{csv.push(u.fullName+','+u.username+','+u.email+','+roleConfig[u.role].display+','+(u.department||'')+','+(u.license||'')+','+(u.phone||'')+','+(u.isActive?'Active':'Inactive')+','+(u.lastLogin||'Never'));});    
+    const blob=new Blob([csv.join('\n')],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='mediflow-users.csv';a.click();URL.revokeObjectURL(url);
     showToast('Users exported to CSV');
 }
 
-// ==================== PERMISSIONS TABLE ====================
-function renderPermissionsTable() {
-    const tbody = document.getElementById('permissionsTableBody');
-    const permColors = { full: 'bg-green-500', own: 'bg-yellow-400', edit: 'bg-yellow-400', order: 'bg-yellow-400', assist: 'bg-yellow-400', dept: 'bg-yellow-400', view: 'bg-blue-400', print: 'bg-blue-400', none: 'bg-gray-300' };
-    const permLabels = { full: 'Full', own: 'Own', edit: 'Edit', order: 'Order', assist: 'Assist', dept: 'Dept', view: 'View', print: 'Print', none: 'None' };
-    tbody.innerHTML = permissionsMatrix.map(row => {
-        return '<tr class="border-b border-gray-50 hover:bg-gray-50">' +
-            '<td class="py-2.5 px-4 font-medium text-gray-700 sticky left-0 bg-white">' + row.module + '</td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.super_admin] + '" title="' + permLabels[row.super_admin] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.admin] + '" title="' + permLabels[row.admin] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.doctor] + '" title="' + permLabels[row.doctor] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.nurse] + '" title="' + permLabels[row.nurse] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.pharmacist] + '" title="' + permLabels[row.pharmacist] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.lab_technician] + '" title="' + permLabels[row.lab_technician] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.receptionist] + '" title="' + permLabels[row.receptionist] + '"></span></td>' +
-            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded ' + permColors[row.billing_staff] + '" title="' + permLabels[row.billing_staff] + '"></span></td>' +
+function renderPermissionsTable(){
+    const tbody=document.getElementById('permissionsTableBody');
+    const permColors={full:'bg-green-500',own:'bg-yellow-400',edit:'bg-yellow-400',order:'bg-yellow-400',assist:'bg-yellow-400',dept:'bg-yellow-400',view:'bg-blue-400',print:'bg-blue-400',none:'bg-gray-300'};
+    const permLabels={full:'Full',own:'Own',edit:'Edit',order:'Order',assist:'Assist',dept:'Dept',view:'View',print:'Print',none:'None'};
+    tbody.innerHTML=permissionsMatrix.map(row=>{
+        return '<tr class="border-b border-gray-50 hover:bg-gray-50">'+
+            '<td class="py-2.5 px-4 font-medium text-gray-700 sticky left-0 bg-white">'+row.module+'</td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.super_admin]+'" title="'+permLabels[row.super_admin]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.admin]+'" title="'+permLabels[row.admin]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.doctor]+'" title="'+permLabels[row.doctor]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.nurse]+'" title="'+permLabels[row.nurse]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.pharmacist]+'" title="'+permLabels[row.pharmacist]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.lab_technician]+'" title="'+permLabels[row.lab_technician]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.receptionist]+'" title="'+permLabels[row.receptionist]+'"></span></td>'+
+            '<td class="py-2.5 px-2 text-center"><span class="inline-block w-3 h-3 rounded '+permColors[row.billing_staff]+'" title="'+permLabels[row.billing_staff]+'"></span></td>'+
             '</tr>';
     }).join('');
 }
 
-// ==================== AUDIT LOG ====================
-function renderAuditLog() {
-    const tbody = document.getElementById('auditLogBody');
-    tbody.innerHTML = auditLogs.map(log => {
-        return '<tr class="border-b border-gray-50 hover:bg-gray-50">' +
-            '<td class="py-2 px-3 text-gray-600 font-mono text-xs">' + log.timestamp + '</td>' +
-            '<td class="py-2 px-3 text-gray-700 font-medium">' + log.user + '</td>' +
-            '<td class="py-2 px-3"><span class="px-2 py-0.5 rounded text-xs font-medium ' + (log.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') + '">' + log.action + '</span></td>' +
-            '<td class="py-2 px-3 text-gray-600">' + log.module + '</td>' +
-            '<td class="py-2 px-3 text-gray-500 font-mono text-xs">' + log.ip + '</td>' +
-            '<td class="py-2 px-3"><span class="flex items-center gap-1 text-xs ' + (log.success ? 'text-green-600' : 'text-red-500') + '"><span class="w-2 h-2 rounded-full ' + (log.success ? 'bg-green-500' : 'bg-red-500') + '"></span>' + (log.success ? 'Success' : 'Failed') + '</span></td>' +
+function renderAuditLog(){
+    const tbody=document.getElementById('auditLogBody');
+    tbody.innerHTML=auditLogs.map(log=>{
+        return '<tr class="border-b border-gray-50 hover:bg-gray-50">'+
+            '<td class="py-2 px-3 text-gray-600 font-mono text-xs">'+log.timestamp+'</td>'+
+            '<td class="py-2 px-3 text-gray-700 font-medium">'+log.user+'</td>'+
+            '<td class="py-2 px-3"><span class="px-2 py-0.5 rounded text-xs font-medium '+(log.success?'bg-green-100 text-green-700':'bg-red-100 text-red-700')+'">'+log.action+'</span></td>'+
+            '<td class="py-2 px-3 text-gray-600">'+log.module+'</td>'+
+            '<td class="py-2 px-3 text-gray-500 font-mono text-xs">'+log.ip+'</td>'+
+            '<td class="py-2 px-3"><span class="flex items-center gap-1 text-xs '+(log.success?'text-green-600':'text-red-500')+'"><span class="w-2 h-2 rounded-full '+(log.success?'bg-green-500':'bg-red-500')+'"></span>'+(log.success?'Success':'Failed')+'</span></td>'+
             '</tr>';
     }).join('');
 }
+
+document.addEventListener('DOMContentLoaded',function(){
+    lucide.createIcons();
+    updateStats();
+    renderUsersTable();
+    renderPermissionsTable();
+    renderAuditLog();
+    updateFormatPreview();
+    // Setup facility preview listeners
+    ['facilityName','facilityTagline','facilityAddress','facilityPhone','facilityEmail'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el)el.addEventListener('input',updateFacilityPreview);
+    });
+});
 </script>
 </body>
 </html>
